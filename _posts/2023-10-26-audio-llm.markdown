@@ -1,0 +1,27 @@
+---
+layout: post
+title:  "Exploring AudioLM: A bit of paper dissect, a bit of code"
+date:   2023-10-26 18:00:00 +0300
+image:  et-eallm.png
+tags:   Expert-Talk
+---
+
+## Speaker 
+#### Duygu Altinok 
+
+Duygu Altinok is a senior NLP engineer with 15 years of experience in almost all areas of NLP including search engine technology, speech recognition, text analytics and conversational AI. She authored several publications in NLP area at conferences such as ACL, LREC and CLNLP. She also enjoys working for open-source projects and a contributor of spaCy library.   Duygu earned her undergraduate degree in Computer Engineering from METU, Ankara in 2010 and later earned her Master’s degree in Mathematics from Bilkent University, Ankara in 2012. She spent 2 years at University of Bonn for her PhD studies. She is currently a senior engineer at Deepgram with a focus on speech recognition.   Originally from Istanbul, Duygu currently resides in Berlin, DE with her cute dog Adele.
+
+
+[Linkedin][duygo-altinok-profile] 
+
+## Details
+In this session, we're diving into the fascinating world of engineering and audio with a focus on Google's AudioLM model. Our talk will be a deep exploration where we break down the model, understand its core components, and even get hands-on with some PyTorch code. We'll start by demystifying analog and digital signals, grasping the concept of codecs, and how music is turned into data. Then, we'll get into the nitty-gritty of SoundStream. Moving on, we'll take a quick look at generative models, their key players, and how decoders play their part. Hold onto your seats as we go through a simple PyTorch implementation of decoder layers. Lastly, we'll merge the world of audio and generative models with AudioLM. We'll revisit SoundStream, demystify how audio conditioning works, and even do a brief PyTorch demo. Get ready for a blend of audio and engineering that's both informative and engaging!
+
+## Youtube Video 
+
+Watch in detail video of this event on [Youtube][youtube-video-audiollm] 
+
+
+
+[duygo-altinok-profile]: https://www.linkedin.com/in/duygu-altinok-4021389a/
+[youtube-video-audiollm]: https://www.youtube.com/watch?v=wxfgZqccaOA

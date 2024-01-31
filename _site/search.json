@@ -1,0 +1,35 @@
+[
+  
+    {
+      "title"    : "Community Call",
+      "category" : "",
+      "tags"     : "Community and calls",
+      "url"      : "/2024/01/18/Community-call/",
+      "date"     : "18 Jan, 2024"
+    } ,
+  
+    {
+      "title"    : "Azure&#39;s AI Symphony - Orchestration, Embeddings &amp; More!",
+      "category" : "",
+      "tags"     : "Expert-Talk",
+      "url"      : "/2023/11/16/azure-ai-symphony/",
+      "date"     : "16 Nov, 2023"
+    } ,
+  
+    {
+      "title"    : "Exploring AudioLM: A bit of paper dissect, a bit of code",
+      "category" : "",
+      "tags"     : "Expert-Talk",
+      "url"      : "/2023/10/26/audio-llm/",
+      "date"     : "26 Oct, 2023"
+    } ,
+  
+    {
+      "title"    : "Stable Diffusion: Latent Generative Modeling for Efficient Visual Synthesis",
+      "category" : "",
+      "tags"     : "Expert-Talk",
+      "url"      : "/2023/10/10/stable-diffusion/",
+      "date"     : "10 Oct, 2023"
+    } 
+  
+]
