@@ -1,8 +1,8 @@
 ---
 layout: post
-title: Info session: GenAI Gurus Project Incubator with Microsoft for Startups Founders Hub 
+title: "Info session: GenAI Gurus Project Incubator with Microsoft for Startups Founders Hub"
 date: 2024-04-24 18:30:00 +0300
-image: 03.jpg
+image: Incubator.png
 tags: Incubator
 ---
 ## Details
