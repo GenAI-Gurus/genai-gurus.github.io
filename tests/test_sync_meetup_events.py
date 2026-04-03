@@ -53,6 +53,24 @@ class SyncMeetupEventsTests(unittest.TestCase):
         urls = mod.extract_event_urls_from_html(html)
         self.assertIn("https://www.meetup.com/genai-gurus/events/312645423", urls)
 
+    def test_parse_api_events_handles_meetup_rest_payload(self):
+        payload = """
+        [
+          {
+            "name": "GenAI Past Session",
+            "time": 1729445400000,
+            "link": "https://www.meetup.com/genai-gurus/events/312645423/",
+            "description": "Speaker: Jane Doe",
+            "is_online": true,
+            "venue": {"name": "Online"}
+          }
+        ]
+        """
+        events = mod.parse_api_events(payload)
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["title"], "GenAI Past Session")
+        self.assertEqual(events[0]["meetup_url"], "https://www.meetup.com/genai-gurus/events/312645423/")
+
 
 if __name__ == "__main__":
     unittest.main()

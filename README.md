@@ -29,6 +29,8 @@ The homepage reads event data from `_data/events.json`.
   - If not set, the script defaults to `https://www.meetup.com/genai-gurus/events/`.
 - `MEETUP_PAST_EVENTS_URL` (optional): override Meetup past-events page URL used to supplement iCal with recent historical events.
   - If not set, the script defaults to `https://www.meetup.com/genai-gurus/events/past/`.
+- `MEETUP_EVENTS_API_URL` (optional): override Meetup REST events endpoint used as an additional fallback for past events.
+  - If not set, the script defaults to `https://api.meetup.com/genai-gurus/events`.
 - `MEETUP_SYNC_STRICT` (optional): if truthy (`1`, `true`, `yes`, `on`), the script exits non-zero when fetch fails.
   - Useful in CI to surface data-source outages immediately.
 - `MEETUP_SYNC_DEBUG` (optional): if truthy, emits detailed fetch/parse diagnostics to stdout (source URLs, payload sizes, parsed counts, and sample event URLs).

@@ -9,7 +9,7 @@ import json
 import os
 import re
 import sys
-from urllib.parse import urljoin
+from urllib.parse import urlencode, urljoin
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -19,6 +19,7 @@ OUTPUT_FILE = REPO_ROOT / "_data" / "events.json"
 DEFAULT_ICAL_URL = "https://www.meetup.com/genai-gurus/events/ical/"
 DEFAULT_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/"
 DEFAULT_PAST_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/past/"
+DEFAULT_EVENTS_API_URL = "https://api.meetup.com/genai-gurus/events"
 
 
 def log(msg: str) -> None:
@@ -236,6 +237,52 @@ def merge_events(*event_lists: list[dict[str, str]]) -> list[dict[str, str]]:
     return sorted(merged.values(), key=lambda e: e["date"])
 
 
+def parse_api_events(events_payload: str) -> list[dict[str, str]]:
+    try:
+        payload = json.loads(events_payload)
+    except json.JSONDecodeError:
+        return []
+
+    if not isinstance(payload, list):
+        return []
+
+    now = dt.datetime.now(dt.timezone.utc)
+    parsed_events: list[dict[str, str]] = []
+    for event in payload:
+        if not isinstance(event, dict):
+            continue
+        event_time_ms = event.get("time")
+        if not isinstance(event_time_ms, (int, float)):
+            continue
+
+        event_dt = dt.datetime.fromtimestamp(event_time_ms / 1000, tz=dt.timezone.utc)
+        venue = event.get("venue")
+        location_name = ""
+        if isinstance(venue, dict):
+            location_name = str(venue.get("name", "")).strip()
+        if not location_name:
+            location_name = "Online" if bool(event.get("is_online")) else "TBD"
+
+        description = strip_html(str(event.get("description", "")))
+        parsed_events.append(
+            {
+                "title": strip_html(str(event.get("name", ""))) or "GenAI Gurus Event",
+                "date": event_dt.isoformat().replace("+00:00", "Z"),
+                "event_status": "upcoming" if event_dt >= now else "past",
+                "speaker_name": extract_speaker("", description),
+                "location_label": location_name,
+                "meetup_url": str(event.get("link", "")).strip() or DEFAULT_EVENTS_URL,
+                "youtube_url": "",
+                "image": "",
+                "summary": description[:280],
+            }
+        )
+
+    ordered = sorted(parsed_events, key=lambda e: e["date"])
+    debug(f"parse_api_events: parsed {len(ordered)} events")
+    return ordered
+
+
 def extract_event_urls_from_html(page_html: str) -> list[str]:
     href_pattern = re.compile(
         r'href=["\'](?P<href>(?:https?://www\.meetup\.com)?/[^"\']+/events/[^"\']+)["\']',
@@ -291,10 +338,12 @@ def fetch_events() -> list[dict[str, str]]:
     source_url = getenv_or_default("MEETUP_ICAL_URL", DEFAULT_ICAL_URL)
     events_url = getenv_or_default("MEETUP_EVENTS_URL", DEFAULT_EVENTS_URL)
     past_events_url = getenv_or_default("MEETUP_PAST_EVENTS_URL", DEFAULT_PAST_EVENTS_URL)
+    events_api_url = getenv_or_default("MEETUP_EVENTS_API_URL", DEFAULT_EVENTS_API_URL)
     headers = {"User-Agent": "genai-gurus-event-sync/1.0"}
     debug(f"fetch_events: source_url={source_url}")
     debug(f"fetch_events: events_url={events_url}")
     debug(f"fetch_events: past_events_url={past_events_url}")
+    debug(f"fetch_events: events_api_url={events_api_url}")
 
     errors: list[str] = []
 
@@ -326,6 +375,27 @@ def fetch_events() -> list[dict[str, str]]:
             debug(f"Past sample URLs: {[e.get('meetup_url') for e in past_events[:5]]}")
     except (urllib.error.URLError, RuntimeError, ValueError) as exc:
         errors.append(f"past events source failed: {exc}")
+
+    if not past_events:
+        try:
+            query = urlencode(
+                {
+                    "status": "past",
+                    "page": 20,
+                    "desc": "true",
+                    "only": "name,time,link,description,is_online,venue",
+                }
+            )
+            api_payload = fetch_url(f"{events_api_url}?{query}", headers=headers)
+            api_events = [event for event in parse_api_events(api_payload) if event.get("event_status") == "past"]
+            if api_events:
+                past_events = api_events
+                log(f"Fetched {len(past_events)} past events from Meetup API")
+                debug(f"API past sample URLs: {[e.get('meetup_url') for e in past_events[:5]]}")
+            else:
+                errors.append("Meetup API returned no parseable past events")
+        except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+            errors.append(f"events API source failed: {exc}")
 
     merged_events = merge_events(ical_events, past_events)
     debug(
