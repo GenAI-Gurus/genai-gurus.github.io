@@ -16,6 +16,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_FILE = REPO_ROOT / "_data" / "events.json"
+EVENT_LINKS_FILE = REPO_ROOT / "_data" / "event_links.json"
 DEFAULT_ICAL_URL = "https://www.meetup.com/genai-gurus/events/ical/"
 DEFAULT_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/"
 DEFAULT_PAST_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/past/"
@@ -237,6 +238,90 @@ def merge_events(*event_lists: list[dict[str, str]]) -> list[dict[str, str]]:
     return sorted(merged.values(), key=lambda e: e["date"])
 
 
+def normalize_event_url(url: str) -> str:
+    return (url or "").strip().split("?", 1)[0].rstrip("/")
+
+
+def load_event_links() -> list[str]:
+    if not EVENT_LINKS_FILE.exists():
+        return []
+    try:
+        payload = json.loads(EVENT_LINKS_FILE.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return []
+    if not isinstance(payload, list):
+        return []
+    return [normalize_event_url(str(item)) for item in payload if normalize_event_url(str(item))]
+
+
+def write_event_links_if_changed(links: list[str]) -> bool:
+    deduped = sorted({normalize_event_url(link) for link in links if normalize_event_url(link)})
+    serialized = json.dumps(deduped, ensure_ascii=False, indent=2) + "\n"
+    EVENT_LINKS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    if EVENT_LINKS_FILE.exists() and EVENT_LINKS_FILE.read_text(encoding="utf-8") == serialized:
+        return False
+    EVENT_LINKS_FILE.write_text(serialized, encoding="utf-8")
+    return True
+
+
+def discover_links_from_visible_sources(headers: dict[str, str], source_url: str, events_url: str) -> list[str]:
+    discovered: set[str] = set()
+    try:
+        payload = fetch_url(source_url, headers=headers)
+        for event in parse_ical_events(payload):
+            discovered.add(normalize_event_url(event.get("meetup_url", "")))
+    except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+        debug(f"discover_links: iCal source failed: {exc}")
+
+    try:
+        payload = fetch_url(events_url, headers=headers)
+        for event in parse_ld_json_events(payload):
+            discovered.add(normalize_event_url(event.get("meetup_url", "")))
+        for link in extract_event_urls_from_html(payload):
+            discovered.add(normalize_event_url(link))
+    except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+        debug(f"discover_links: events page source failed: {exc}")
+
+    links = sorted([link for link in discovered if link])
+    debug(f"discover_links: found {len(links)} links from visible sources")
+    return links
+
+
+def hydrate_events_from_links(
+    links: list[str],
+    headers: dict[str, str],
+    fallback_events_by_url: dict[str, dict[str, str]],
+) -> list[dict[str, str]]:
+    hydrated: list[dict[str, str]] = []
+    for link in links:
+        normalized = normalize_event_url(link)
+        if not normalized:
+            continue
+        parsed_for_link: list[dict[str, str]] = []
+        try:
+            payload = fetch_url(normalized, headers=headers, timeout=20)
+            parsed_for_link = parse_ld_json_events(payload)
+        except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+            debug(f"hydrate_events_from_links: failed to fetch {normalized}: {exc}")
+
+        chosen: dict[str, str] | None = None
+        for item in parsed_for_link:
+            if normalize_event_url(item.get("meetup_url", "")) == normalized:
+                chosen = item
+                break
+        if chosen is None and parsed_for_link:
+            chosen = parsed_for_link[0]
+
+        if chosen is None:
+            chosen = fallback_events_by_url.get(normalized)
+
+        if chosen is not None:
+            hydrated.append(chosen)
+
+    debug(f"hydrate_events_from_links: produced {len(hydrated)} events from {len(links)} links")
+    return hydrated
+
+
 def parse_api_events(events_payload: str) -> list[dict[str, str]]:
     try:
         payload = json.loads(events_payload)
@@ -443,6 +528,36 @@ def write_if_changed(events: list[dict[str, str]]) -> bool:
     return True
 
 
+def load_existing_events() -> list[dict[str, str]]:
+    if not OUTPUT_FILE.exists():
+        return []
+    try:
+        payload = json.loads(OUTPUT_FILE.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return []
+    if not isinstance(payload, list):
+        return []
+    return [event for event in payload if isinstance(event, dict)]
+
+
+def preserve_existing_past_events(fetched_events: list[dict[str, str]]) -> list[dict[str, str]]:
+    fetched_past_count = sum(1 for event in fetched_events if event.get("event_status") == "past")
+    if fetched_past_count > 0:
+        return fetched_events
+
+    existing_events = load_existing_events()
+    existing_past = [event for event in existing_events if event.get("event_status") == "past"]
+    if not existing_past:
+        return fetched_events
+
+    merged = merge_events(fetched_events, existing_past)
+    log(
+        "No past events fetched from Meetup sources; "
+        f"preserved {len(existing_past)} cached past events from _data/events.json"
+    )
+    return merged
+
+
 def is_truthy_env(name: str, default: bool = False) -> bool:
     raw = os.environ.get(name)
     if raw is None:
@@ -472,11 +587,31 @@ def main() -> int:
             return 1
         return 0
 
+    existing_events = load_existing_events()
+    headers = {"User-Agent": "genai-gurus-event-sync/1.0"}
+    discovered_links = discover_links_from_visible_sources(headers, DEFAULT_ICAL_URL, DEFAULT_EVENTS_URL)
+    existing_links = load_event_links()
+    cached_links = [normalize_event_url(event.get("meetup_url", "")) for event in existing_events]
+    fetched_links = [normalize_event_url(event.get("meetup_url", "")) for event in events]
+    all_links = sorted({link for link in [*existing_links, *cached_links, *fetched_links, *discovered_links] if link})
+    links_changed = write_event_links_if_changed(all_links)
+
+    fallback_map = {
+        normalize_event_url(event.get("meetup_url", "")): event
+        for event in merge_events(existing_events, events)
+        if normalize_event_url(event.get("meetup_url", ""))
+    }
+    hydrated_events = hydrate_events_from_links(all_links, headers=headers, fallback_events_by_url=fallback_map)
+    events = merge_events(events, hydrated_events)
+    events = preserve_existing_past_events(events)
     changed = write_if_changed(events)
     upcoming_count = sum(1 for event in events if event.get("event_status") == "upcoming")
     past_count = sum(1 for event in events if event.get("event_status") == "past")
     log(f"Synced {len(events)} events ({upcoming_count} upcoming, {past_count} past)")
-    log("Updated _data/events.json" if changed else "No event data changes detected")
+    if changed or links_changed:
+        log("Updated event data files" if changed and links_changed else ("Updated _data/events.json" if changed else "Updated _data/event_links.json"))
+    else:
+        log("No event data changes detected")
     return 0
 
 

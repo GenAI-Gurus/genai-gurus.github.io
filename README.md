@@ -12,14 +12,17 @@ bundle exec jekyll serve
 ## Event data and maintenance
 
 The homepage reads event data from `_data/events.json`.
+Discovered Meetup event URLs are persisted in `_data/event_links.json`.
 
 - **Automated sync:** `.github/workflows/sync-meetup-events.yml` runs every 12 hours, on manual dispatch, on pull requests targeting `main`/`master`, and on all pushes to `main`/`master`.
 - **Sync script:** `scripts/sync_meetup_events.py` fetches Meetup data and writes deterministic JSON output.
   - Primary source: Meetup iCal feed.
   - Fallback source: JSON-LD event data from the Meetup events page.
 - **Commit behavior:** The workflow only commits when `_data/events.json` actually changes.
+  - It also commits when `_data/event_links.json` changes (new discovered event URLs).
 - **Failure behavior:** If Meetup fetch fails, the script logs a warning and keeps the last successful local data file.
   - In GitHub Actions, strict mode is enabled so fetch failures fail the workflow run (instead of silently succeeding).
+  - If fresh fetches contain no past events (e.g., source requires login), cached past events already in `_data/events.json` are preserved.
 
 ### Optional source overrides
 

@@ -1,4 +1,6 @@
 import importlib.util
+import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -70,6 +72,62 @@ class SyncMeetupEventsTests(unittest.TestCase):
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]["title"], "GenAI Past Session")
         self.assertEqual(events[0]["meetup_url"], "https://www.meetup.com/genai-gurus/events/312645423/")
+
+    def test_preserve_existing_past_events_when_fetch_returns_only_upcoming(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            temp_output = Path(tmpdir) / "events.json"
+            temp_output.write_text(
+                json.dumps(
+                    [
+                        {
+                            "title": "Past Event",
+                            "date": "2025-10-20T16:30:00Z",
+                            "event_status": "past",
+                            "meetup_url": "https://www.meetup.com/genai-gurus/events/312645423/",
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            original_output = mod.OUTPUT_FILE
+            mod.OUTPUT_FILE = temp_output
+            try:
+                merged = mod.preserve_existing_past_events(
+                    [
+                        {
+                            "title": "Upcoming Event",
+                            "date": "2026-04-15T19:00:00Z",
+                            "event_status": "upcoming",
+                            "meetup_url": "https://www.meetup.com/genai-gurus/events/313946334/",
+                        }
+                    ]
+                )
+            finally:
+                mod.OUTPUT_FILE = original_output
+
+        self.assertEqual(len(merged), 2)
+        statuses = {event["event_status"] for event in merged}
+        self.assertIn("past", statuses)
+        self.assertIn("upcoming", statuses)
+
+    def test_event_links_file_roundtrip_and_normalization(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            temp_links = Path(tmpdir) / "event_links.json"
+            original_links_file = mod.EVENT_LINKS_FILE
+            mod.EVENT_LINKS_FILE = temp_links
+            try:
+                changed = mod.write_event_links_if_changed(
+                    [
+                        "https://www.meetup.com/genai-gurus/events/313946334/?foo=1",
+                        "https://www.meetup.com/genai-gurus/events/313946334/",
+                    ]
+                )
+                links = mod.load_event_links()
+            finally:
+                mod.EVENT_LINKS_FILE = original_links_file
+
+        self.assertTrue(changed)
+        self.assertEqual(links, ["https://www.meetup.com/genai-gurus/events/313946334"])
 
 
 if __name__ == "__main__":
