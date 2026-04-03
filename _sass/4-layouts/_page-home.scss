@@ -72,6 +72,22 @@
   padding: 28px;
 }
 
+
+.event-card__featured-media {
+  margin: -28px -28px 18px;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  background: $light-gray;
+
+  img {
+    display: block;
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    aspect-ratio: 16 / 9;
+  }
+}
+
 .event-card__meta {
   margin-bottom: 8px;
   font-size: 13px;

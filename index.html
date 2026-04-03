@@ -39,7 +39,11 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
       </div>
       <div class="col col-12">
         {% if next_event %}
+          {% assign next_event_image = next_event.image | default: site.data.settings.default_image %}
           <article class="event-card event-card--featured">
+            <div class="event-card__featured-media">
+              <img src="{{ next_event_image }}" alt="{{ next_event.title }} event image" loading="lazy" />
+            </div>
             <p class="event-card__meta">{{ next_event.date | date: "%A, %B %-d, %Y at %-I:%M %p %Z" }}{% if next_event.location_label %} · {{ next_event.location_label }}{% endif %}</p>
             <h3>{{ next_event.title }}</h3>
             {% if next_event.speaker_name %}<p class="event-card__speaker">Speaker: {{ next_event.speaker_name }}</p>{% endif %}
@@ -47,7 +51,11 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
             <a class="button button--primary" href="{{ next_event.meetup_url }}" target="_blank" rel="noopener noreferrer">Register on Meetup</a>
           </article>
         {% elsif latest_event %}
+          {% assign latest_event_image = latest_event.image | default: site.data.settings.default_image %}
           <article class="event-card event-card--featured">
+            <div class="event-card__featured-media">
+              <img src="{{ latest_event_image }}" alt="{{ latest_event.title }} event image" loading="lazy" />
+            </div>
             <p class="event-card__meta">{{ latest_event.date | date: "%A, %B %-d, %Y at %-I:%M %p %Z" }}{% if latest_event.location_label %} · {{ latest_event.location_label }}{% endif %}</p>
             <h3>{{ latest_event.title }}</h3>
             <p class="event-card__speaker">No upcoming Meetup event is listed right now — showing the latest session.</p>
