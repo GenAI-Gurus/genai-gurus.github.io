@@ -1,46 +1,13 @@
 [
   {
-    "title": "GenAI Gurus community call",
-    "date": "2025-10-20T16:30:00Z",
-    "event_status": "past",
-    "speaker_name": "GenAI Gurus Community",
+    "title": "OpenClaw - How It Works\\, Best Practices & Safety for Real-World Personal Agents",
+    "date": "2026-04-15T19:00:00Z",
+    "event_status": "upcoming",
+    "speaker_name": "\\nMaxim is a software engineer with 10+ years across web\\",
     "location_label": "Online",
-    "meetup_url": "https://www.meetup.com/genai-gurus/events/307464559/",
+    "meetup_url": "https://www.meetup.com/genai-gurus/events/313946334/",
     "youtube_url": "",
-    "image": "/images/cc.png",
-    "summary": "Monthly community call to connect GenAI enthusiasts, share updates, and discuss upcoming expert talks."
-  },
-  {
-    "title": "GenAI Gurus community call",
-    "date": "2025-09-15T16:30:00Z",
-    "event_status": "past",
-    "speaker_name": "GenAI Gurus Community",
-    "location_label": "Online",
-    "meetup_url": "https://www.meetup.com/genai-gurus/events/307202482/",
-    "youtube_url": "",
-    "image": "/images/cc.png",
-    "summary": "Monthly community call to connect GenAI enthusiasts, share updates, and discuss upcoming expert talks."
-  },
-  {
-    "title": "GenAI Gurus community call",
-    "date": "2025-08-18T16:30:00Z",
-    "event_status": "past",
-    "speaker_name": "GenAI Gurus Community",
-    "location_label": "Online",
-    "meetup_url": "https://www.meetup.com/genai-gurus/events/307047644/",
-    "youtube_url": "",
-    "image": "/images/cc.png",
-    "summary": "Monthly community call to connect GenAI enthusiasts, share updates, and discuss upcoming expert talks."
-  },
-  {
-    "title": "GenAI Gurus community call",
-    "date": "2025-07-21T16:30:00Z",
-    "event_status": "past",
-    "speaker_name": "GenAI Gurus Community",
-    "location_label": "Online",
-    "meetup_url": "https://www.meetup.com/genai-gurus/events/306030348/",
-    "youtube_url": "",
-    "image": "/images/cc.png",
-    "summary": "Monthly community call to connect GenAI enthusiasts, share updates, and discuss upcoming expert talks."
+    "image": "",
+    "summary": "GenAI Gurus - Generative Artificial Intelligence\\nIn this talk we'll go over the main building blocks behind personal agents like OpenClaw and how they fit together in practice. From there\\, we'll look at best practices for making them actually useful\\, and the safety patterns th"
   }
 ]
