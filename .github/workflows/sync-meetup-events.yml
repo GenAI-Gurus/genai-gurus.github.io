@@ -5,10 +5,10 @@ on:
     branches:
       - main
       - master
-    paths:
-      - '.github/workflows/sync-meetup-events.yml'
-      - 'scripts/sync_meetup_events.py'
-      - '_data/events.json'
+  pull_request:
+    branches:
+      - main
+      - master
   schedule:
     - cron: '15 */12 * * *'
   workflow_dispatch:
@@ -54,6 +54,7 @@ jobs:
           PY
 
       - name: Commit changes when event data changed
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if git diff --quiet -- _data/events.json; then
             echo "No changes to commit"
