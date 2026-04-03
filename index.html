@@ -75,10 +75,12 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
       {% assign past_count = 0 %}
       {% for event in events reversed %}
         {% assign event_ts = event.date | date: '%s' %}
-        {% if event_ts < now_ts and past_count < 6 %}
+        {% if event_ts < now_ts and past_count < 9 %}
           {% assign past_count = past_count | plus: 1 %}
           <div class="col col-4 col-d-6 col-t-12">
             <article class="event-card">
+              {% assign event_image = event.image | default: "images/logo1.png" %}
+              <img class="event-card__image" src="{{ event_image | relative_url }}" alt="{{ event.title }} cover image" loading="lazy">
               <p class="event-card__meta">{{ event.date | date: "%b %-d, %Y" }}</p>
               <h3>{{ event.title }}</h3>
               {% if event.speaker_name %}<p class="event-card__speaker">{{ event.speaker_name }}</p>{% endif %}
@@ -93,7 +95,12 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
       {% endfor %}
       {% if past_count == 0 %}
         <div class="col col-12">
-          <p>No past events are available yet.</p>
+          <p>No past Meetup events are available yet.</p>
+        </div>
+      {% endif %}
+      {% if past_count > 0 %}
+        <div class="col col-12 events-section__footer">
+          <a class="button" href="https://www.meetup.com/genai-gurus/events/past/" target="_blank" rel="noopener noreferrer">See all past events on Meetup</a>
         </div>
       {% endif %}
     </div>
