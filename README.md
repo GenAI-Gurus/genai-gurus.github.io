@@ -14,6 +14,7 @@ bundle exec jekyll serve
 The homepage reads event data from `_data/events.json`.
 
 - **Automated sync:** `.github/workflows/sync-meetup-events.yml` runs every 12 hours and on manual dispatch.
+  - It also runs on pushes to `main`/`master` that touch the workflow, sync script, or `_data/events.json` so first-time setup is easier to verify.
 - **Sync script:** `scripts/sync_meetup_events.py` fetches Meetup data and writes deterministic JSON output.
   - Primary source: Meetup iCal feed.
   - Fallback source: JSON-LD event data from the Meetup events page.
@@ -32,6 +33,11 @@ The homepage reads event data from `_data/events.json`.
 ```bash
 python scripts/sync_meetup_events.py
 ```
+
+### GitHub Actions notes
+
+- Scheduled (`cron`) workflows only run from the repository default branch.
+- If the schedule appears not to run, use **Actions → Sync Meetup events → Run workflow** once to validate permissions and fetch behavior.
 
 ## Notes
 
