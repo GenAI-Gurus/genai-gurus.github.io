@@ -17,6 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_FILE = REPO_ROOT / "_data" / "events.json"
 DEFAULT_ICAL_URL = "https://www.meetup.com/genai-gurus/events/ical/"
 DEFAULT_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/"
+DEFAULT_PAST_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/past/"
 
 
 def log(msg: str) -> None:
@@ -53,6 +54,16 @@ def strip_html(value: str) -> str:
     no_tags = re.sub(r"<[^>]+>", " ", value)
     normalized = re.sub(r"\s+", " ", no_tags)
     return html.unescape(normalized).strip()
+
+
+def unescape_ical_text(value: str) -> str:
+    return (
+        value.replace("\\n", "\n")
+        .replace("\\N", "\n")
+        .replace("\\,", ",")
+        .replace("\\;", ";")
+        .replace("\\\\", "\\")
+    )
 
 
 def extract_speaker(summary: str, description: str) -> str:
@@ -94,9 +105,9 @@ def parse_ical_events(ical_text: str) -> list[dict[str, str]]:
         if event_dt is None:
             continue
 
-        summary = strip_html(item.get("SUMMARY", "")).strip()
-        description = strip_html(item.get("DESCRIPTION", "")).strip()
-        location = strip_html(item.get("LOCATION", "")).strip()
+        summary = strip_html(unescape_ical_text(item.get("SUMMARY", ""))).strip()
+        description = strip_html(unescape_ical_text(item.get("DESCRIPTION", ""))).strip()
+        location = strip_html(unescape_ical_text(item.get("LOCATION", ""))).strip()
         meetup_url = item.get("URL", "").strip() or DEFAULT_ICAL_URL
         speaker = extract_speaker(summary, description)
 
@@ -202,12 +213,25 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
     return ordered
 
 
+def merge_events(*event_lists: list[dict[str, str]]) -> list[dict[str, str]]:
+    merged: dict[str, dict[str, str]] = {}
+    for events in event_lists:
+        for event in events:
+            key = event.get("meetup_url") or f"{event.get('title')}|{event.get('date')}"
+            merged[key] = event
+    return sorted(merged.values(), key=lambda e: e["date"])
+
+
 def fetch_events() -> list[dict[str, str]]:
     source_url = getenv_or_default("MEETUP_ICAL_URL", DEFAULT_ICAL_URL)
     events_url = getenv_or_default("MEETUP_EVENTS_URL", DEFAULT_EVENTS_URL)
+    past_events_url = getenv_or_default("MEETUP_PAST_EVENTS_URL", DEFAULT_PAST_EVENTS_URL)
     headers = {"User-Agent": "genai-gurus-event-sync/1.0"}
 
     errors: list[str] = []
+
+    ical_events: list[dict[str, str]] = []
+    past_events: list[dict[str, str]] = []
 
     try:
         req = urllib.request.Request(source_url, headers=headers)
@@ -215,12 +239,29 @@ def fetch_events() -> list[dict[str, str]]:
             if response.status != 200:
                 raise RuntimeError(f"Meetup iCal fetch failed with status {response.status}")
             payload = response.read().decode("utf-8", errors="replace")
-        events = parse_ical_events(payload)
-        if events:
-            return events
-        errors.append("Meetup iCal response contained no events")
+        ical_events = parse_ical_events(payload)
+        if ical_events:
+            log(f"Fetched {len(ical_events)} events from iCal")
+        else:
+            errors.append("Meetup iCal response contained no events")
     except (urllib.error.URLError, RuntimeError, ValueError) as exc:
         errors.append(f"iCal source failed: {exc}")
+
+    try:
+        req = urllib.request.Request(past_events_url, headers=headers)
+        with urllib.request.urlopen(req, timeout=25) as response:
+            if response.status != 200:
+                raise RuntimeError(f"Meetup past events page fetch failed with status {response.status}")
+            payload = response.read().decode("utf-8", errors="replace")
+        past_events = [event for event in parse_ld_json_events(payload) if event.get("event_status") == "past"]
+        if past_events:
+            log(f"Fetched {len(past_events)} past events from events/past page")
+    except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+        errors.append(f"past events source failed: {exc}")
+
+    merged_events = merge_events(ical_events, past_events)
+    if merged_events:
+        return merged_events
 
     try:
         req = urllib.request.Request(events_url, headers=headers)
