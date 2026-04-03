@@ -16,6 +16,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_FILE = REPO_ROOT / "_data" / "events.json"
 DEFAULT_ICAL_URL = "https://www.meetup.com/genai-gurus/events/ical/"
+DEFAULT_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/"
 
 
 def log(msg: str) -> None:
@@ -117,15 +118,124 @@ def parse_ical_events(ical_text: str) -> list[dict[str, str]]:
     return parsed_events
 
 
+def to_utc_iso(value: str) -> str | None:
+    raw = (value or "").strip()
+    if not raw:
+        return None
+    normalized = raw.replace("Z", "+00:00")
+    try:
+        parsed = dt.datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=dt.timezone.utc)
+    return parsed.astimezone(dt.timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
+    script_pattern = re.compile(
+        r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    now = dt.datetime.now(dt.timezone.utc)
+    parsed_events: list[dict[str, str]] = []
+
+    for match in script_pattern.findall(events_html):
+        candidate = match.strip()
+        if not candidate:
+            continue
+        try:
+            payload = json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+
+        nodes = payload if isinstance(payload, list) else [payload]
+        for node in nodes:
+            if not isinstance(node, dict):
+                continue
+            node_type = node.get("@type")
+            if isinstance(node_type, list):
+                is_event = "Event" in node_type
+            else:
+                is_event = node_type == "Event"
+            if not is_event:
+                continue
+
+            date_iso = to_utc_iso(str(node.get("startDate", "")))
+            if not date_iso:
+                continue
+
+            event_dt = dt.datetime.fromisoformat(date_iso.replace("Z", "+00:00"))
+            location = node.get("location", {})
+            if isinstance(location, dict):
+                location_name = str(location.get("name", "")).strip()
+            else:
+                location_name = ""
+            description = strip_html(str(node.get("description", "")))
+            speaker = ""
+            performer = node.get("performer")
+            if isinstance(performer, dict):
+                speaker = str(performer.get("name", "")).strip()
+            elif isinstance(performer, list):
+                names = [str(p.get("name", "")).strip() for p in performer if isinstance(p, dict)]
+                speaker = ", ".join([n for n in names if n])
+
+            parsed_events.append(
+                {
+                    "title": strip_html(str(node.get("name", ""))) or "GenAI Gurus Event",
+                    "date": date_iso,
+                    "event_status": "upcoming" if event_dt >= now else "past",
+                    "speaker_name": speaker or extract_speaker("", description),
+                    "location_label": location_name or "Online",
+                    "meetup_url": str(node.get("url", "")).strip() or DEFAULT_EVENTS_URL,
+                    "youtube_url": "",
+                    "image": "",
+                    "summary": description[:280],
+                }
+            )
+
+    deduped: dict[str, dict[str, str]] = {}
+    for event in parsed_events:
+        key = event.get("meetup_url") or f"{event.get('title')}|{event.get('date')}"
+        deduped[key] = event
+    ordered = sorted(deduped.values(), key=lambda e: e["date"])
+    return ordered
+
+
 def fetch_events() -> list[dict[str, str]]:
     source_url = os.environ.get("MEETUP_ICAL_URL", DEFAULT_ICAL_URL)
+    events_url = os.environ.get("MEETUP_EVENTS_URL", DEFAULT_EVENTS_URL)
     headers = {"User-Agent": "genai-gurus-event-sync/1.0"}
-    req = urllib.request.Request(source_url, headers=headers)
-    with urllib.request.urlopen(req, timeout=25) as response:
-        if response.status != 200:
-            raise RuntimeError(f"Meetup fetch failed with status {response.status}")
-        payload = response.read().decode("utf-8", errors="replace")
-    return parse_ical_events(payload)
+
+    errors: list[str] = []
+
+    try:
+        req = urllib.request.Request(source_url, headers=headers)
+        with urllib.request.urlopen(req, timeout=25) as response:
+            if response.status != 200:
+                raise RuntimeError(f"Meetup iCal fetch failed with status {response.status}")
+            payload = response.read().decode("utf-8", errors="replace")
+        events = parse_ical_events(payload)
+        if events:
+            return events
+        errors.append("Meetup iCal response contained no events")
+    except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+        errors.append(f"iCal source failed: {exc}")
+
+    try:
+        req = urllib.request.Request(events_url, headers=headers)
+        with urllib.request.urlopen(req, timeout=25) as response:
+            if response.status != 200:
+                raise RuntimeError(f"Meetup events page fetch failed with status {response.status}")
+            payload = response.read().decode("utf-8", errors="replace")
+        events = parse_ld_json_events(payload)
+        if events:
+            return events
+        errors.append("Meetup events page contained no parseable JSON-LD events")
+    except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+        errors.append(f"events page source failed: {exc}")
+
+    raise RuntimeError("; ".join(errors))
 
 
 def write_if_changed(events: list[dict[str, str]]) -> bool:
