@@ -247,6 +247,13 @@ def write_if_changed(events: list[dict[str, str]]) -> bool:
     return True
 
 
+def is_truthy_env(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def main() -> int:
     try:
         events = fetch_events()
@@ -255,10 +262,15 @@ def main() -> int:
         if not OUTPUT_FILE.exists():
             OUTPUT_FILE.write_text("[]\n", encoding="utf-8")
             log("Created empty fallback _data/events.json")
+        if is_truthy_env("MEETUP_SYNC_STRICT", default=False):
+            log("Strict mode enabled; failing job so fetch issues are visible in CI.")
+            return 1
         return 0
 
     changed = write_if_changed(events)
-    log(f"Synced {len(events)} events")
+    upcoming_count = sum(1 for event in events if event.get("event_status") == "upcoming")
+    past_count = sum(1 for event in events if event.get("event_status") == "past")
+    log(f"Synced {len(events)} events ({upcoming_count} upcoming, {past_count} past)")
     log("Updated _data/events.json" if changed else "No event data changes detected")
     return 0
 
