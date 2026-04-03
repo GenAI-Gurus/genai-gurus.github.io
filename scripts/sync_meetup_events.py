@@ -9,6 +9,7 @@ import json
 import os
 import re
 import sys
+from urllib.parse import urlencode, urljoin
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -17,10 +18,17 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_FILE = REPO_ROOT / "_data" / "events.json"
 DEFAULT_ICAL_URL = "https://www.meetup.com/genai-gurus/events/ical/"
 DEFAULT_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/"
+DEFAULT_PAST_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/past/"
+DEFAULT_EVENTS_API_URL = "https://api.meetup.com/genai-gurus/events"
 
 
 def log(msg: str) -> None:
     print(f"[sync-meetup-events] {msg}")
+
+
+def debug(msg: str) -> None:
+    if os.environ.get("MEETUP_SYNC_DEBUG", "").strip().lower() in {"1", "true", "yes", "on"}:
+        print(f"[sync-meetup-events][debug] {msg}")
 
 
 def unfold_ical_lines(text: str) -> list[str]:
@@ -53,6 +61,16 @@ def strip_html(value: str) -> str:
     no_tags = re.sub(r"<[^>]+>", " ", value)
     normalized = re.sub(r"\s+", " ", no_tags)
     return html.unescape(normalized).strip()
+
+
+def unescape_ical_text(value: str) -> str:
+    return (
+        value.replace("\\n", "\n")
+        .replace("\\N", "\n")
+        .replace("\\,", ",")
+        .replace("\\;", ";")
+        .replace("\\\\", "\\")
+    )
 
 
 def extract_speaker(summary: str, description: str) -> str:
@@ -94,9 +112,9 @@ def parse_ical_events(ical_text: str) -> list[dict[str, str]]:
         if event_dt is None:
             continue
 
-        summary = strip_html(item.get("SUMMARY", "")).strip()
-        description = strip_html(item.get("DESCRIPTION", "")).strip()
-        location = strip_html(item.get("LOCATION", "")).strip()
+        summary = strip_html(unescape_ical_text(item.get("SUMMARY", ""))).strip()
+        description = strip_html(unescape_ical_text(item.get("DESCRIPTION", ""))).strip()
+        location = strip_html(unescape_ical_text(item.get("LOCATION", ""))).strip()
         meetup_url = item.get("URL", "").strip() or DEFAULT_ICAL_URL
         speaker = extract_speaker(summary, description)
 
@@ -115,6 +133,7 @@ def parse_ical_events(ical_text: str) -> list[dict[str, str]]:
         )
 
     parsed_events.sort(key=lambda e: e["date"])
+    debug(f"parse_ical_events: parsed {len(parsed_events)} events")
     return parsed_events
 
 
@@ -150,9 +169,15 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
             continue
 
         nodes = payload if isinstance(payload, list) else [payload]
+        expanded_nodes: list[dict[str, object]] = []
         for node in nodes:
             if not isinstance(node, dict):
                 continue
+            if isinstance(node.get("@graph"), list):
+                expanded_nodes.extend([g for g in node["@graph"] if isinstance(g, dict)])
+            expanded_nodes.append(node)
+
+        for node in expanded_nodes:
             node_type = node.get("@type")
             if isinstance(node_type, list):
                 is_event = "Event" in node_type
@@ -199,35 +224,206 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
         key = event.get("meetup_url") or f"{event.get('title')}|{event.get('date')}"
         deduped[key] = event
     ordered = sorted(deduped.values(), key=lambda e: e["date"])
+    debug(f"parse_ld_json_events: parsed {len(ordered)} events")
     return ordered
+
+
+def merge_events(*event_lists: list[dict[str, str]]) -> list[dict[str, str]]:
+    merged: dict[str, dict[str, str]] = {}
+    for events in event_lists:
+        for event in events:
+            key = event.get("meetup_url") or f"{event.get('title')}|{event.get('date')}"
+            merged[key] = event
+    return sorted(merged.values(), key=lambda e: e["date"])
+
+
+def parse_api_events(events_payload: str) -> list[dict[str, str]]:
+    try:
+        payload = json.loads(events_payload)
+    except json.JSONDecodeError:
+        return []
+
+    if not isinstance(payload, list):
+        return []
+
+    now = dt.datetime.now(dt.timezone.utc)
+    parsed_events: list[dict[str, str]] = []
+    for event in payload:
+        if not isinstance(event, dict):
+            continue
+        event_time_ms = event.get("time")
+        if not isinstance(event_time_ms, (int, float)):
+            continue
+
+        event_dt = dt.datetime.fromtimestamp(event_time_ms / 1000, tz=dt.timezone.utc)
+        venue = event.get("venue")
+        location_name = ""
+        if isinstance(venue, dict):
+            location_name = str(venue.get("name", "")).strip()
+        if not location_name:
+            location_name = "Online" if bool(event.get("is_online")) else "TBD"
+
+        description = strip_html(str(event.get("description", "")))
+        parsed_events.append(
+            {
+                "title": strip_html(str(event.get("name", ""))) or "GenAI Gurus Event",
+                "date": event_dt.isoformat().replace("+00:00", "Z"),
+                "event_status": "upcoming" if event_dt >= now else "past",
+                "speaker_name": extract_speaker("", description),
+                "location_label": location_name,
+                "meetup_url": str(event.get("link", "")).strip() or DEFAULT_EVENTS_URL,
+                "youtube_url": "",
+                "image": "",
+                "summary": description[:280],
+            }
+        )
+
+    ordered = sorted(parsed_events, key=lambda e: e["date"])
+    debug(f"parse_api_events: parsed {len(ordered)} events")
+    return ordered
+
+
+def extract_event_urls_from_html(page_html: str) -> list[str]:
+    href_pattern = re.compile(
+        r'href=["\'](?P<href>(?:https?://www\.meetup\.com)?/[^"\']+/events/[^"\']+)["\']',
+        flags=re.IGNORECASE,
+    )
+    text_pattern = re.compile(
+        r'(?P<href>(?:https?://www\.meetup\.com)?/[^"\'\s<>]+/events/\d+/?(?:\?[^"\'\s<>]*)?)',
+        flags=re.IGNORECASE,
+    )
+    seen: set[str] = set()
+    urls: list[str] = []
+
+    href_matches = 0
+    for match in href_pattern.finditer(page_html):
+        candidate = match.group("href")
+        normalized = urljoin("https://www.meetup.com", candidate).split("?", 1)[0].rstrip("/")
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        urls.append(normalized)
+        href_matches += 1
+
+    json_like_html = page_html.replace("\\/", "/")
+    text_matches = 0
+    for match in text_pattern.finditer(json_like_html):
+        candidate = match.group("href")
+        normalized = urljoin("https://www.meetup.com", candidate).split("?", 1)[0].rstrip("/")
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        urls.append(normalized)
+        text_matches += 1
+
+    debug(
+        "extract_event_urls_from_html: "
+        f"{len(urls)} candidate event URLs "
+        f"(href matches added={href_matches}, text/json matches added={text_matches})"
+    )
+    return urls
+
+
+def fetch_url(url: str, headers: dict[str, str], timeout: int = 25) -> str:
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=timeout) as response:
+        if response.status != 200:
+            raise RuntimeError(f"Meetup fetch failed for {url} with status {response.status}")
+        payload = response.read().decode("utf-8", errors="replace")
+        debug(f"fetch_url: {url} -> status {response.status}, bytes={len(payload)}")
+        return payload
 
 
 def fetch_events() -> list[dict[str, str]]:
     source_url = getenv_or_default("MEETUP_ICAL_URL", DEFAULT_ICAL_URL)
     events_url = getenv_or_default("MEETUP_EVENTS_URL", DEFAULT_EVENTS_URL)
+    past_events_url = getenv_or_default("MEETUP_PAST_EVENTS_URL", DEFAULT_PAST_EVENTS_URL)
+    events_api_url = getenv_or_default("MEETUP_EVENTS_API_URL", DEFAULT_EVENTS_API_URL)
     headers = {"User-Agent": "genai-gurus-event-sync/1.0"}
+    debug(f"fetch_events: source_url={source_url}")
+    debug(f"fetch_events: events_url={events_url}")
+    debug(f"fetch_events: past_events_url={past_events_url}")
+    debug(f"fetch_events: events_api_url={events_api_url}")
 
     errors: list[str] = []
 
-    try:
-        req = urllib.request.Request(source_url, headers=headers)
-        with urllib.request.urlopen(req, timeout=25) as response:
-            if response.status != 200:
-                raise RuntimeError(f"Meetup iCal fetch failed with status {response.status}")
-            payload = response.read().decode("utf-8", errors="replace")
-        events = parse_ical_events(payload)
-        if events:
-            return events
-        errors.append("Meetup iCal response contained no events")
-    except (urllib.error.URLError, RuntimeError, ValueError) as exc:
-        errors.append(f"iCal source failed: {exc}")
+    ical_events: list[dict[str, str]] = []
+    past_events: list[dict[str, str]] = []
 
     try:
-        req = urllib.request.Request(events_url, headers=headers)
-        with urllib.request.urlopen(req, timeout=25) as response:
-            if response.status != 200:
-                raise RuntimeError(f"Meetup events page fetch failed with status {response.status}")
-            payload = response.read().decode("utf-8", errors="replace")
+        payload = fetch_url(source_url, headers=headers)
+        ical_events = parse_ical_events(payload)
+        if ical_events:
+            log(f"Fetched {len(ical_events)} events from iCal")
+            debug(f"iCal sample URLs: {[e.get('meetup_url') for e in ical_events[:3]]}")
+        else:
+            errors.append("Meetup iCal response contained no events")
+    except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+        message = f"iCal source failed: {exc}"
+        errors.append(message)
+        debug(message)
+
+    try:
+        payload = fetch_url(past_events_url, headers=headers)
+        past_events = [event for event in parse_ld_json_events(payload) if event.get("event_status") == "past"]
+        if not past_events:
+            for event_url in extract_event_urls_from_html(payload)[:12]:
+                event_html = fetch_url(event_url, headers=headers, timeout=20)
+                detailed = parse_ld_json_events(event_html)
+                past_events.extend([event for event in detailed if event.get("event_status") == "past"])
+            debug(f"past-event detail crawl produced {len(past_events)} past events before merge")
+        if past_events:
+            log(f"Fetched {len(past_events)} past events from events/past page")
+            debug(f"Past sample URLs: {[e.get('meetup_url') for e in past_events[:5]]}")
+    except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+        message = f"past events source failed: {exc}"
+        errors.append(message)
+        debug(message)
+
+    if not past_events:
+        try:
+            query = urlencode(
+                {
+                    "status": "past",
+                    "page": 20,
+                    "desc": "true",
+                    "only": "name,time,link,description,is_online,venue",
+                }
+            )
+            api_url = f"{events_api_url}?{query}"
+            debug(f"Trying Meetup API fallback URL: {api_url}")
+            api_payload = fetch_url(api_url, headers=headers)
+            api_events = [event for event in parse_api_events(api_payload) if event.get("event_status") == "past"]
+            if api_events:
+                past_events = api_events
+                log(f"Fetched {len(past_events)} past events from Meetup API")
+                debug(f"API past sample URLs: {[e.get('meetup_url') for e in past_events[:5]]}")
+            else:
+                message = "Meetup API returned no parseable past events"
+                errors.append(message)
+                debug(message)
+        except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+            message = f"events API source failed: {exc}"
+            errors.append(message)
+            debug(message)
+
+    merged_events = merge_events(ical_events, past_events)
+    debug(
+        "Merged counts: "
+        f"ical={len(ical_events)}, past={len(past_events)}, merged={len(merged_events)}, "
+        f"upcoming={sum(1 for e in merged_events if e.get('event_status') == 'upcoming')}, "
+        f"past={sum(1 for e in merged_events if e.get('event_status') == 'past')}"
+    )
+    if not past_events:
+        debug("No past events recovered from any source")
+        for source_error in errors:
+            if "past events source failed" in source_error or "events API source failed" in source_error:
+                debug(f"Past-source diagnostic: {source_error}")
+    if merged_events:
+        return merged_events
+
+    try:
+        payload = fetch_url(events_url, headers=headers)
         events = parse_ld_json_events(payload)
         if events:
             return events
@@ -263,6 +459,7 @@ def getenv_or_default(name: str, default: str) -> str:
 
 
 def main() -> int:
+    debug("Debug logging enabled via MEETUP_SYNC_DEBUG")
     try:
         events = fetch_events()
     except (urllib.error.URLError, RuntimeError, ValueError) as exc:
