@@ -1,8 +1,7 @@
-#baseurl: "/zolan" # the subpath of your site, e.g. /blog
-url: "https://genai-gurus.com" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://genai-gurus.com"
+title: "GenAI Gurus"
+description: "Community for practical and thoughtful Generative AI"
 
-
-# Build settings
 markdown: kramdown
 permalink: pretty
 plugins:
@@ -13,8 +12,6 @@ plugins:
 paginate: 5
 paginate_path: "/page/:num"
 
-
-# Pages Path
 defaults:
   - scope:
       path: '_pages'
@@ -24,11 +21,13 @@ defaults:
 include:
   - _pages
 
+exclude:
+  - _site
 
 # Tags
-tag_page_dir:         tag
-tag_page_layout:      tag_page
-tag_permalink_style:  pretty
+tag_page_dir: tag
+tag_page_layout: tag_page
+tag_permalink_style: pretty
 
 sass:
   sass_dir: _sass

@@ -1,48 +1,41 @@
 #-------------------------------
 # General Site Settings
 title: GenAI Gurus
-logo: logo1.png # You can add own logo.
-description: Zolan is modern minimal theme for Jekyll
+logo: logo1.png
+description: GenAI Gurus is a community exploring practical, technical, and societal questions around Generative AI through talks, discussions, and shared learning.
+site_url: https://genai-gurus.com
+default_image: /images/main_logo.jpg
 
+#-------------------------------
+# Hero / Community copy
+community:
+  headline: Community for practical and thoughtful Generative AI
+  one_liner: GenAI Gurus is a global community for builders, researchers, and leaders exploring applied Generative AI through practical talks and open discussion.
+  short_description: We host expert sessions and community conversations focused on real-world GenAI applications, responsible adoption, and cross-disciplinary learning.
 
 #-------------------------------
 # Author Settings
 author:
   name: GenAI Gurus
   image: main_logo.jpg
-  say-hello: Welcome to <strong> GenAI Gurus </strong>
-  bio: We are an innovative, non-profit organization that stands at the exciting intersection of science and arts, powered by Generative AI. We recognize the transformative potential of these technologies on the workplace and the broader societal landscape. By joining GenAI Gurus, you don't just join a community; you position yourself in the driving seat of a network of passionate individuals, all committed to shaping the future.
-
-
+  say-hello: Welcome to GenAI Gurus
+  bio: A community focused on practical, technical, and responsible Generative AI.
 
 #-------------------------------
 # Contact links
-markdown: https://www.meetup.com/genai-gurus/ # Add your Meetup handle
-linkedin: https://www.linkedin.com/company/genai-gurus/ # Add your LinkedIn handle
-youtube: https://www.youtube.com/@GenAIGurus # Add your Youtube handle
-#twitter: https://twitter.com/ # Add your Twitter handle
-#facebook: https://facebook.com/ # Add your Facebook handle
-#dribbble: https://dribbble.com/ # Add your Dribbble handle
-#instagram: https://instagram.com/ # Add your Instagram handle
-#pinterest: https://pinterest.com/ # Add your Pinterest handle
-
+meetup: https://www.meetup.com/genai-gurus/
+linkedin: https://www.linkedin.com/company/genai-gurus/
+youtube: https://www.youtube.com/@GenAIGurus
+email: hello@genai-gurus.com
 
 #-------------------------------
 # Comment Section (Disqus)
-#disqus-identifier: mr-brown # add your shortname for Disqus Comment. For example mr-brown
-
-
-#-------------------------------
-# Instagram Feed
-instafeed: # To enable the instafeed, use the value true. To turn off use the value false.
-instagram-profile: artemsheludko_ # Add instagram username
-
+#disqus-identifier: mr-brown
 
 #-------------------------------
 # Google Analytics
-google-analytics: # Add your identifier. For example UA-99631805-1.
-
+google-analytics:
 
 #-------------------------------
 # Newsletter
-mailchimp: # Add your MailChimp form identifier. For example - blogenjoyfreedom.us16.list-manage.com/subscribe/post?u=cd56155d76ddeeb4c0bc4d080&amp;id=7a526cd13e
+mailchimp:
