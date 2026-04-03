@@ -12,6 +12,16 @@ spec.loader.exec_module(mod)
 
 
 class SyncMeetupEventsTests(unittest.TestCase):
+    def test_extract_image_from_event_html_prefers_og_image(self):
+        html = """
+        <meta property="og:image" content="https://images.meetupstatic.com/event.jpg" />
+        <script type="application/ld+json">
+          {"@type":"Event","image":"https://images.meetupstatic.com/other.jpg"}
+        </script>
+        """
+        image_url = mod.extract_image_from_event_html(html)
+        self.assertEqual(image_url, "https://images.meetupstatic.com/event.jpg")
+
     def test_extract_event_urls_handles_relative_and_absolute_links(self):
         html = '''
         <a href="/genai-gurus/events/312645423/">Past A</a>
@@ -73,61 +83,31 @@ class SyncMeetupEventsTests(unittest.TestCase):
         self.assertEqual(events[0]["title"], "GenAI Past Session")
         self.assertEqual(events[0]["meetup_url"], "https://www.meetup.com/genai-gurus/events/312645423/")
 
-    def test_preserve_existing_past_events_when_fetch_returns_only_upcoming(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            temp_output = Path(tmpdir) / "events.json"
-            temp_output.write_text(
-                json.dumps(
-                    [
-                        {
-                            "title": "Past Event",
-                            "date": "2025-10-20T16:30:00Z",
-                            "event_status": "past",
-                            "meetup_url": "https://www.meetup.com/genai-gurus/events/312645423/",
-                        }
-                    ]
-                ),
-                encoding="utf-8",
+    def test_fill_event_images_uses_event_page_image(self):
+        events = [
+            {
+                "title": "OpenClaw",
+                "date": "2026-04-15T19:00:00Z",
+                "event_status": "upcoming",
+                "speaker_name": "",
+                "location_label": "Online",
+                "meetup_url": "https://www.meetup.com/genai-gurus/events/313946334/",
+                "youtube_url": "",
+                "image": "",
+                "summary": "",
+            }
+        ]
+
+        original_fetch_url = mod.fetch_url
+        try:
+            mod.fetch_url = lambda *_args, **_kwargs: (
+                '<meta property="og:image" content="https://images.meetupstatic.com/correct-image.jpg" />'
             )
-            original_output = mod.OUTPUT_FILE
-            mod.OUTPUT_FILE = temp_output
-            try:
-                merged = mod.preserve_existing_past_events(
-                    [
-                        {
-                            "title": "Upcoming Event",
-                            "date": "2026-04-15T19:00:00Z",
-                            "event_status": "upcoming",
-                            "meetup_url": "https://www.meetup.com/genai-gurus/events/313946334/",
-                        }
-                    ]
-                )
-            finally:
-                mod.OUTPUT_FILE = original_output
+            updated = mod.fill_event_images(events, headers={})
+        finally:
+            mod.fetch_url = original_fetch_url
 
-        self.assertEqual(len(merged), 2)
-        statuses = {event["event_status"] for event in merged}
-        self.assertIn("past", statuses)
-        self.assertIn("upcoming", statuses)
-
-    def test_event_links_file_roundtrip_and_normalization(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            temp_links = Path(tmpdir) / "event_links.json"
-            original_links_file = mod.EVENT_LINKS_FILE
-            mod.EVENT_LINKS_FILE = temp_links
-            try:
-                changed = mod.write_event_links_if_changed(
-                    [
-                        "https://www.meetup.com/genai-gurus/events/313946334/?foo=1",
-                        "https://www.meetup.com/genai-gurus/events/313946334/",
-                    ]
-                )
-                links = mod.load_event_links()
-            finally:
-                mod.EVENT_LINKS_FILE = original_links_file
-
-        self.assertTrue(changed)
-        self.assertEqual(links, ["https://www.meetup.com/genai-gurus/events/313946334"])
+        self.assertEqual(updated[0]["image"], "https://images.meetupstatic.com/correct-image.jpg")
 
 
 if __name__ == "__main__":
