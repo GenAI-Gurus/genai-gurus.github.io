@@ -222,6 +222,30 @@ def merge_events(*event_lists: list[dict[str, str]]) -> list[dict[str, str]]:
     return sorted(merged.values(), key=lambda e: e["date"])
 
 
+def extract_event_urls_from_html(page_html: str) -> list[str]:
+    pattern = re.compile(
+        r'href=["\'](https://www\.meetup\.com/[^"\']+/events/\d+/?)["\']',
+        flags=re.IGNORECASE,
+    )
+    seen: set[str] = set()
+    urls: list[str] = []
+    for candidate in pattern.findall(page_html):
+        normalized = candidate.split("?", 1)[0]
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        urls.append(normalized)
+    return urls
+
+
+def fetch_url(url: str, headers: dict[str, str], timeout: int = 25) -> str:
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=timeout) as response:
+        if response.status != 200:
+            raise RuntimeError(f"Meetup fetch failed for {url} with status {response.status}")
+        return response.read().decode("utf-8", errors="replace")
+
+
 def fetch_events() -> list[dict[str, str]]:
     source_url = getenv_or_default("MEETUP_ICAL_URL", DEFAULT_ICAL_URL)
     events_url = getenv_or_default("MEETUP_EVENTS_URL", DEFAULT_EVENTS_URL)
@@ -234,11 +258,7 @@ def fetch_events() -> list[dict[str, str]]:
     past_events: list[dict[str, str]] = []
 
     try:
-        req = urllib.request.Request(source_url, headers=headers)
-        with urllib.request.urlopen(req, timeout=25) as response:
-            if response.status != 200:
-                raise RuntimeError(f"Meetup iCal fetch failed with status {response.status}")
-            payload = response.read().decode("utf-8", errors="replace")
+        payload = fetch_url(source_url, headers=headers)
         ical_events = parse_ical_events(payload)
         if ical_events:
             log(f"Fetched {len(ical_events)} events from iCal")
@@ -248,12 +268,13 @@ def fetch_events() -> list[dict[str, str]]:
         errors.append(f"iCal source failed: {exc}")
 
     try:
-        req = urllib.request.Request(past_events_url, headers=headers)
-        with urllib.request.urlopen(req, timeout=25) as response:
-            if response.status != 200:
-                raise RuntimeError(f"Meetup past events page fetch failed with status {response.status}")
-            payload = response.read().decode("utf-8", errors="replace")
+        payload = fetch_url(past_events_url, headers=headers)
         past_events = [event for event in parse_ld_json_events(payload) if event.get("event_status") == "past"]
+        if not past_events:
+            for event_url in extract_event_urls_from_html(payload)[:12]:
+                event_html = fetch_url(event_url, headers=headers, timeout=20)
+                detailed = parse_ld_json_events(event_html)
+                past_events.extend([event for event in detailed if event.get("event_status") == "past"])
         if past_events:
             log(f"Fetched {len(past_events)} past events from events/past page")
     except (urllib.error.URLError, RuntimeError, ValueError) as exc:
@@ -264,11 +285,7 @@ def fetch_events() -> list[dict[str, str]]:
         return merged_events
 
     try:
-        req = urllib.request.Request(events_url, headers=headers)
-        with urllib.request.urlopen(req, timeout=25) as response:
-            if response.status != 200:
-                raise RuntimeError(f"Meetup events page fetch failed with status {response.status}")
-            payload = response.read().decode("utf-8", errors="replace")
+        payload = fetch_url(events_url, headers=headers)
         events = parse_ld_json_events(payload)
         if events:
             return events
