@@ -359,7 +359,9 @@ def fetch_events() -> list[dict[str, str]]:
         else:
             errors.append("Meetup iCal response contained no events")
     except (urllib.error.URLError, RuntimeError, ValueError) as exc:
-        errors.append(f"iCal source failed: {exc}")
+        message = f"iCal source failed: {exc}"
+        errors.append(message)
+        debug(message)
 
     try:
         payload = fetch_url(past_events_url, headers=headers)
@@ -374,7 +376,9 @@ def fetch_events() -> list[dict[str, str]]:
             log(f"Fetched {len(past_events)} past events from events/past page")
             debug(f"Past sample URLs: {[e.get('meetup_url') for e in past_events[:5]]}")
     except (urllib.error.URLError, RuntimeError, ValueError) as exc:
-        errors.append(f"past events source failed: {exc}")
+        message = f"past events source failed: {exc}"
+        errors.append(message)
+        debug(message)
 
     if not past_events:
         try:
@@ -386,16 +390,22 @@ def fetch_events() -> list[dict[str, str]]:
                     "only": "name,time,link,description,is_online,venue",
                 }
             )
-            api_payload = fetch_url(f"{events_api_url}?{query}", headers=headers)
+            api_url = f"{events_api_url}?{query}"
+            debug(f"Trying Meetup API fallback URL: {api_url}")
+            api_payload = fetch_url(api_url, headers=headers)
             api_events = [event for event in parse_api_events(api_payload) if event.get("event_status") == "past"]
             if api_events:
                 past_events = api_events
                 log(f"Fetched {len(past_events)} past events from Meetup API")
                 debug(f"API past sample URLs: {[e.get('meetup_url') for e in past_events[:5]]}")
             else:
-                errors.append("Meetup API returned no parseable past events")
+                message = "Meetup API returned no parseable past events"
+                errors.append(message)
+                debug(message)
         except (urllib.error.URLError, RuntimeError, ValueError) as exc:
-            errors.append(f"events API source failed: {exc}")
+            message = f"events API source failed: {exc}"
+            errors.append(message)
+            debug(message)
 
     merged_events = merge_events(ical_events, past_events)
     debug(
@@ -404,6 +414,11 @@ def fetch_events() -> list[dict[str, str]]:
         f"upcoming={sum(1 for e in merged_events if e.get('event_status') == 'upcoming')}, "
         f"past={sum(1 for e in merged_events if e.get('event_status') == 'past')}"
     )
+    if not past_events:
+        debug("No past events recovered from any source")
+        for source_error in errors:
+            if "past events source failed" in source_error or "events API source failed" in source_error:
+                debug(f"Past-source diagnostic: {source_error}")
     if merged_events:
         return merged_events
 
