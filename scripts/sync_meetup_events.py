@@ -203,8 +203,8 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
 
 
 def fetch_events() -> list[dict[str, str]]:
-    source_url = os.environ.get("MEETUP_ICAL_URL", DEFAULT_ICAL_URL)
-    events_url = os.environ.get("MEETUP_EVENTS_URL", DEFAULT_EVENTS_URL)
+    source_url = getenv_or_default("MEETUP_ICAL_URL", DEFAULT_ICAL_URL)
+    events_url = getenv_or_default("MEETUP_EVENTS_URL", DEFAULT_EVENTS_URL)
     headers = {"User-Agent": "genai-gurus-event-sync/1.0"}
 
     errors: list[str] = []
@@ -252,6 +252,14 @@ def is_truthy_env(name: str, default: bool = False) -> bool:
     if raw is None:
         return default
     return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def getenv_or_default(name: str, default: str) -> str:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    value = raw.strip()
+    return value or default
 
 
 def main() -> int:

@@ -32,8 +32,6 @@ jobs:
       - name: Sync events from Meetup
         run: python scripts/sync_meetup_events.py
         env:
-          MEETUP_ICAL_URL: ${{ secrets.MEETUP_ICAL_URL }}
-          MEETUP_EVENTS_URL: ${{ secrets.MEETUP_EVENTS_URL }}
           MEETUP_SYNC_STRICT: '1'
 
       - name: Show synced event stats

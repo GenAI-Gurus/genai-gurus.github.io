@@ -22,14 +22,16 @@ The homepage reads event data from `_data/events.json`.
 - **Failure behavior:** If Meetup fetch fails, the script logs a warning and keeps the last successful local data file.
   - In GitHub Actions, strict mode is enabled so fetch failures fail the workflow run (instead of silently succeeding).
 
-### Optional secret
+### Optional source overrides
 
-- `MEETUP_ICAL_URL` (optional): override iCal endpoint used by the sync job.
+- `MEETUP_ICAL_URL` (optional): override iCal endpoint used by the sync script.
   - If not set, the script defaults to `https://www.meetup.com/genai-gurus/events/ical/`.
 - `MEETUP_EVENTS_URL` (optional): override Meetup events page URL used as the JSON-LD fallback source.
   - If not set, the script defaults to `https://www.meetup.com/genai-gurus/events/`.
 - `MEETUP_SYNC_STRICT` (optional): if truthy (`1`, `true`, `yes`, `on`), the script exits non-zero when fetch fails.
   - Useful in CI to surface data-source outages immediately.
+
+By default, the GitHub Actions workflow uses the script defaults for source URLs (no secrets required).
 
 ### Manual sync
 
