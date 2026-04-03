@@ -9,6 +9,7 @@ import json
 import os
 import re
 import sys
+from urllib.parse import urljoin
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -161,9 +162,15 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
             continue
 
         nodes = payload if isinstance(payload, list) else [payload]
+        expanded_nodes: list[dict[str, object]] = []
         for node in nodes:
             if not isinstance(node, dict):
                 continue
+            if isinstance(node.get("@graph"), list):
+                expanded_nodes.extend([g for g in node["@graph"] if isinstance(g, dict)])
+            expanded_nodes.append(node)
+
+        for node in expanded_nodes:
             node_type = node.get("@type")
             if isinstance(node_type, list):
                 is_event = "Event" in node_type
@@ -224,13 +231,14 @@ def merge_events(*event_lists: list[dict[str, str]]) -> list[dict[str, str]]:
 
 def extract_event_urls_from_html(page_html: str) -> list[str]:
     pattern = re.compile(
-        r'href=["\'](https://www\.meetup\.com/[^"\']+/events/\d+/?)["\']',
+        r'href=["\'](?P<href>(?:https?://www\.meetup\.com)?/[^"\']+/events/[^"\']+)["\']',
         flags=re.IGNORECASE,
     )
     seen: set[str] = set()
     urls: list[str] = []
-    for candidate in pattern.findall(page_html):
-        normalized = candidate.split("?", 1)[0]
+    for match in pattern.finditer(page_html):
+        candidate = match.group("href")
+        normalized = urljoin("https://www.meetup.com", candidate).split("?", 1)[0].rstrip("/")
         if normalized in seen:
             continue
         seen.add(normalized)
