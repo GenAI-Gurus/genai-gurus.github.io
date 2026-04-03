@@ -87,6 +87,8 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
           {% assign past_count = past_count | plus: 1 %}
           <div class="col col-4 col-d-6 col-t-12">
             <article class="event-card">
+              {% assign event_image = event.image | default: "images/logo1.png" %}
+              <img class="event-card__image" src="{{ event_image | relative_url }}" alt="{{ event.title }} cover image" loading="lazy">
               <p class="event-card__meta">{{ event.date | date: "%b %-d, %Y" }}</p>
               <h3>{{ event.title }}</h3>
               {% if event.speaker_name %}<p class="event-card__speaker">{{ event.speaker_name }}</p>{% endif %}
@@ -105,6 +107,8 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
           {% assign past_count = past_count | plus: 1 %}
           <div class="col col-4 col-d-6 col-t-12">
             <article class="event-card">
+              {% assign post_image = post.image | default: "images/logo1.png" %}
+              <img class="event-card__image" src="{{ post_image | relative_url }}" alt="{{ post.title }} cover image" loading="lazy">
               <p class="event-card__meta">{{ post.date | date: "%b %-d, %Y" }}</p>
               <h3>{{ post.title }}</h3>
               <p class="event-card__speaker">Community archive</p>
