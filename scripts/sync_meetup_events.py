@@ -25,6 +25,11 @@ def log(msg: str) -> None:
     print(f"[sync-meetup-events] {msg}")
 
 
+def debug(msg: str) -> None:
+    if os.environ.get("MEETUP_SYNC_DEBUG", "").strip().lower() in {"1", "true", "yes", "on"}:
+        print(f"[sync-meetup-events][debug] {msg}")
+
+
 def unfold_ical_lines(text: str) -> list[str]:
     lines = text.splitlines()
     out: list[str] = []
@@ -127,6 +132,7 @@ def parse_ical_events(ical_text: str) -> list[dict[str, str]]:
         )
 
     parsed_events.sort(key=lambda e: e["date"])
+    debug(f"parse_ical_events: parsed {len(parsed_events)} events")
     return parsed_events
 
 
@@ -217,6 +223,7 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
         key = event.get("meetup_url") or f"{event.get('title')}|{event.get('date')}"
         deduped[key] = event
     ordered = sorted(deduped.values(), key=lambda e: e["date"])
+    debug(f"parse_ld_json_events: parsed {len(ordered)} events")
     return ordered
 
 
@@ -243,6 +250,7 @@ def extract_event_urls_from_html(page_html: str) -> list[str]:
             continue
         seen.add(normalized)
         urls.append(normalized)
+    debug(f"extract_event_urls_from_html: found {len(urls)} candidate event URLs")
     return urls
 
 
@@ -251,7 +259,9 @@ def fetch_url(url: str, headers: dict[str, str], timeout: int = 25) -> str:
     with urllib.request.urlopen(req, timeout=timeout) as response:
         if response.status != 200:
             raise RuntimeError(f"Meetup fetch failed for {url} with status {response.status}")
-        return response.read().decode("utf-8", errors="replace")
+        payload = response.read().decode("utf-8", errors="replace")
+        debug(f"fetch_url: {url} -> status {response.status}, bytes={len(payload)}")
+        return payload
 
 
 def fetch_events() -> list[dict[str, str]]:
@@ -259,6 +269,9 @@ def fetch_events() -> list[dict[str, str]]:
     events_url = getenv_or_default("MEETUP_EVENTS_URL", DEFAULT_EVENTS_URL)
     past_events_url = getenv_or_default("MEETUP_PAST_EVENTS_URL", DEFAULT_PAST_EVENTS_URL)
     headers = {"User-Agent": "genai-gurus-event-sync/1.0"}
+    debug(f"fetch_events: source_url={source_url}")
+    debug(f"fetch_events: events_url={events_url}")
+    debug(f"fetch_events: past_events_url={past_events_url}")
 
     errors: list[str] = []
 
@@ -270,6 +283,7 @@ def fetch_events() -> list[dict[str, str]]:
         ical_events = parse_ical_events(payload)
         if ical_events:
             log(f"Fetched {len(ical_events)} events from iCal")
+            debug(f"iCal sample URLs: {[e.get('meetup_url') for e in ical_events[:3]]}")
         else:
             errors.append("Meetup iCal response contained no events")
     except (urllib.error.URLError, RuntimeError, ValueError) as exc:
@@ -283,12 +297,20 @@ def fetch_events() -> list[dict[str, str]]:
                 event_html = fetch_url(event_url, headers=headers, timeout=20)
                 detailed = parse_ld_json_events(event_html)
                 past_events.extend([event for event in detailed if event.get("event_status") == "past"])
+            debug(f"past-event detail crawl produced {len(past_events)} past events before merge")
         if past_events:
             log(f"Fetched {len(past_events)} past events from events/past page")
+            debug(f"Past sample URLs: {[e.get('meetup_url') for e in past_events[:5]]}")
     except (urllib.error.URLError, RuntimeError, ValueError) as exc:
         errors.append(f"past events source failed: {exc}")
 
     merged_events = merge_events(ical_events, past_events)
+    debug(
+        "Merged counts: "
+        f"ical={len(ical_events)}, past={len(past_events)}, merged={len(merged_events)}, "
+        f"upcoming={sum(1 for e in merged_events if e.get('event_status') == 'upcoming')}, "
+        f"past={sum(1 for e in merged_events if e.get('event_status') == 'past')}"
+    )
     if merged_events:
         return merged_events
 
@@ -329,6 +351,7 @@ def getenv_or_default(name: str, default: str) -> str:
 
 
 def main() -> int:
+    debug("Debug logging enabled via MEETUP_SYNC_DEBUG")
     try:
         events = fetch_events()
     except (urllib.error.URLError, RuntimeError, ValueError) as exc:

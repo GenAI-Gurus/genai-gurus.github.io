@@ -33,6 +33,7 @@ jobs:
         run: python scripts/sync_meetup_events.py
         env:
           MEETUP_SYNC_STRICT: '1'
+          MEETUP_SYNC_DEBUG: '1'
 
       - name: Show synced event stats
         run: |
@@ -51,6 +52,13 @@ jobs:
             print("Next upcoming:")
             next_event = sorted(upcoming, key=lambda e: e.get("date", ""))[0]
             print(f"- {next_event.get('date')} | {next_event.get('title')}")
+          if past:
+            print("Most recent past:")
+            most_recent_past = sorted(past, key=lambda e: e.get("date", ""), reverse=True)[0]
+            print(f"- {most_recent_past.get('date')} | {most_recent_past.get('title')}")
+            print(f"- URL: {most_recent_past.get('meetup_url')}")
+          else:
+            print("Most recent past: <none>")
           PY
 
       - name: Commit changes when event data changed
