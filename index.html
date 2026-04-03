@@ -7,6 +7,7 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
 {% assign events = site.data.events | sort: "date" %}
 {% assign now_ts = 'now' | date: '%s' %}
 {% assign next_event = nil %}
+{% assign latest_event = events | last %}
 {% for event in events %}
   {% assign event_ts = event.date | date: '%s' %}
   {% if event_ts >= now_ts and next_event == nil %}
@@ -44,6 +45,14 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
             {% if next_event.speaker_name %}<p class="event-card__speaker">Speaker: {{ next_event.speaker_name }}</p>{% endif %}
             {% if next_event.summary %}<p>{{ next_event.summary }}</p>{% endif %}
             <a class="button button--primary" href="{{ next_event.meetup_url }}" target="_blank" rel="noopener noreferrer">Register on Meetup</a>
+          </article>
+        {% elsif latest_event %}
+          <article class="event-card event-card--featured">
+            <p class="event-card__meta">{{ latest_event.date | date: "%A, %B %-d, %Y at %-I:%M %p %Z" }}{% if latest_event.location_label %} · {{ latest_event.location_label }}{% endif %}</p>
+            <h3>{{ latest_event.title }}</h3>
+            <p class="event-card__speaker">No upcoming Meetup event is listed right now — showing the latest session.</p>
+            {% if latest_event.summary %}<p>{{ latest_event.summary }}</p>{% endif %}
+            <a class="button button--primary" href="{{ site.data.settings.meetup }}" target="_blank" rel="noopener noreferrer">View Meetup events</a>
           </article>
         {% else %}
           <article class="event-card event-card--featured">
