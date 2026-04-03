@@ -44,6 +44,15 @@ class SyncMeetupEventsTests(unittest.TestCase):
         self.assertEqual(events[0]["title"], "Past Meetup Event")
         self.assertEqual(events[0]["event_status"], "past")
 
+    def test_extract_event_urls_handles_json_escaped_urls(self):
+        html = r'''
+        <script>
+          window.__DATA__ = {"links":["https:\/\/www.meetup.com\/genai-gurus\/events\/312645423\/?eventOrigin=group_past_events"]};
+        </script>
+        '''
+        urls = mod.extract_event_urls_from_html(html)
+        self.assertIn("https://www.meetup.com/genai-gurus/events/312645423", urls)
+
 
 if __name__ == "__main__":
     unittest.main()

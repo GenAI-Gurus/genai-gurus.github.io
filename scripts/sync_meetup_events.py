@@ -237,20 +237,43 @@ def merge_events(*event_lists: list[dict[str, str]]) -> list[dict[str, str]]:
 
 
 def extract_event_urls_from_html(page_html: str) -> list[str]:
-    pattern = re.compile(
+    href_pattern = re.compile(
         r'href=["\'](?P<href>(?:https?://www\.meetup\.com)?/[^"\']+/events/[^"\']+)["\']',
+        flags=re.IGNORECASE,
+    )
+    text_pattern = re.compile(
+        r'(?P<href>(?:https?://www\.meetup\.com)?/[^"\'\s<>]+/events/\d+/?(?:\?[^"\'\s<>]*)?)',
         flags=re.IGNORECASE,
     )
     seen: set[str] = set()
     urls: list[str] = []
-    for match in pattern.finditer(page_html):
+
+    href_matches = 0
+    for match in href_pattern.finditer(page_html):
         candidate = match.group("href")
         normalized = urljoin("https://www.meetup.com", candidate).split("?", 1)[0].rstrip("/")
         if normalized in seen:
             continue
         seen.add(normalized)
         urls.append(normalized)
-    debug(f"extract_event_urls_from_html: found {len(urls)} candidate event URLs")
+        href_matches += 1
+
+    json_like_html = page_html.replace("\\/", "/")
+    text_matches = 0
+    for match in text_pattern.finditer(json_like_html):
+        candidate = match.group("href")
+        normalized = urljoin("https://www.meetup.com", candidate).split("?", 1)[0].rstrip("/")
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        urls.append(normalized)
+        text_matches += 1
+
+    debug(
+        "extract_event_urls_from_html: "
+        f"{len(urls)} candidate event URLs "
+        f"(href matches added={href_matches}, text/json matches added={text_matches})"
+    )
     return urls
 
 
