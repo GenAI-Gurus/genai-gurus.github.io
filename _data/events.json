@@ -1,35 +1,46 @@
 [
   {
-    "title": "Info session: GenAI Gurus Project Incubator with Microsoft for Startups Founders Hub",
-    "date": "2024-04-21T15:30:00Z",
-    "event_status": "past",
-    "speaker_name": "GenAI Gurus Team",
-    "location_label": "Online",
-    "meetup_url": "https://www.meetup.com/genai-gurus/",
-    "youtube_url": "",
-    "image": "/images/Incubator.png",
-    "summary": "An info session for AI builders on project incubation, startup support, and practical next steps."
-  },
-  {
-    "title": "Community call",
-    "date": "2024-01-22T16:30:00Z",
+    "title": "GenAI Gurus community call",
+    "date": "2025-10-20T16:30:00Z",
     "event_status": "past",
     "speaker_name": "GenAI Gurus Community",
     "location_label": "Online",
-    "meetup_url": "https://www.meetup.com/genai-gurus/",
+    "meetup_url": "https://www.meetup.com/genai-gurus/events/307464559/",
     "youtube_url": "",
     "image": "/images/cc.png",
-    "summary": "A community discussion on current GenAI trends, member updates, and upcoming collaboration topics."
+    "summary": "Monthly community call to connect GenAI enthusiasts, share updates, and discuss upcoming expert talks."
   },
   {
-    "title": "Symphony of the Future: Azure AI and OpenAI collaboration",
-    "date": "2023-11-16T17:30:00Z",
+    "title": "GenAI Gurus community call",
+    "date": "2025-09-15T16:30:00Z",
     "event_status": "past",
-    "speaker_name": "GenAI Gurus Guests",
+    "speaker_name": "GenAI Gurus Community",
     "location_label": "Online",
-    "meetup_url": "https://www.meetup.com/genai-gurus/",
+    "meetup_url": "https://www.meetup.com/genai-gurus/events/307202482/",
     "youtube_url": "",
-    "image": "/images/et-as.png",
-    "summary": "An expert talk on Azure AI and OpenAI collaboration patterns for enterprise and product teams."
+    "image": "/images/cc.png",
+    "summary": "Monthly community call to connect GenAI enthusiasts, share updates, and discuss upcoming expert talks."
+  },
+  {
+    "title": "GenAI Gurus community call",
+    "date": "2025-08-18T16:30:00Z",
+    "event_status": "past",
+    "speaker_name": "GenAI Gurus Community",
+    "location_label": "Online",
+    "meetup_url": "https://www.meetup.com/genai-gurus/events/307047644/",
+    "youtube_url": "",
+    "image": "/images/cc.png",
+    "summary": "Monthly community call to connect GenAI enthusiasts, share updates, and discuss upcoming expert talks."
+  },
+  {
+    "title": "GenAI Gurus community call",
+    "date": "2025-07-21T16:30:00Z",
+    "event_status": "past",
+    "speaker_name": "GenAI Gurus Community",
+    "location_label": "Online",
+    "meetup_url": "https://www.meetup.com/genai-gurus/events/306030348/",
+    "youtube_url": "",
+    "image": "/images/cc.png",
+    "summary": "Monthly community call to connect GenAI enthusiasts, share updates, and discuss upcoming expert talks."
   }
 ]
