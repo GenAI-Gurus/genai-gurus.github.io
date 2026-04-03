@@ -1,23 +1,15 @@
 <div class="contact">
   <ul class="contact__list list-reset">
-    {% if site.data.settings.youtube %}
-    <li><a href="{{ site.data.settings.youtube }}"><i class="ion ion-logo-youtube"></i></a></li>
-    {% else %} {% endif %}
-
-    {% if site.data.settings.markdown %}
-    <li><a href="{{ site.data.settings.markdown }}"><i class="ion ion-logo-markdown"></i></a></li>
-    {% else %} {% endif %}
+    {% if site.data.settings.meetup %}
+    <li><a href="{{ site.data.settings.meetup }}" aria-label="Meetup"><i class="ion ion-logo-markdown"></i></a></li>
+    {% endif %}
 
     {% if site.data.settings.linkedin %}
-    <li><a href="{{ site.data.settings.linkedin }}"><i class="ion ion-logo-linkedin"></i></a></li>
-    {% else %} {% endif %}
+    <li><a href="{{ site.data.settings.linkedin }}" aria-label="LinkedIn"><i class="ion ion-logo-linkedin"></i></a></li>
+    {% endif %}
 
-    {% if site.data.settings.instagram %}
-    <li><a href="{{ site.data.settings.instagram }}"><i class="ion ion-logo-instagram"></i></a></li>
-    {% else %} {% endif %}
-
-    {% if site.data.settings.pinterest %}
-    <li><a href="{{ site.data.settings.pinterest }}"><i class="ion ion-logo-pinterest"></i></a></li>
-    {% else %} {% endif %}
+    {% if site.data.settings.youtube %}
+    <li><a href="{{ site.data.settings.youtube }}" aria-label="YouTube"><i class="ion ion-logo-youtube"></i></a></li>
+    {% endif %}
   </ul>
 </div>
