@@ -1,6 +1,14 @@
 name: Sync Meetup events
 
 on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '.github/workflows/sync-meetup-events.yml'
+      - 'scripts/sync_meetup_events.py'
+      - '_data/events.json'
   schedule:
     - cron: '15 */12 * * *'
   workflow_dispatch:
@@ -24,7 +32,26 @@ jobs:
       - name: Sync events from Meetup
         run: python scripts/sync_meetup_events.py
         env:
-          MEETUP_ICAL_URL: ${{ secrets.MEETUP_ICAL_URL }}
+          MEETUP_SYNC_STRICT: '1'
+
+      - name: Show synced event stats
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("_data/events.json")
+          events = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+          upcoming = [e for e in events if e.get("event_status") == "upcoming"]
+          past = [e for e in events if e.get("event_status") == "past"]
+          print(f"Total events: {len(events)}")
+          print(f"Upcoming: {len(upcoming)}")
+          print(f"Past: {len(past)}")
+          if upcoming:
+            print("Next upcoming:")
+            next_event = sorted(upcoming, key=lambda e: e.get("date", ""))[0]
+            print(f"- {next_event.get('date')} | {next_event.get('title')}")
+          PY
 
       - name: Commit changes when event data changed
         run: |
