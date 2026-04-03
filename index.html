@@ -91,10 +91,22 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
           </div>
         {% endif %}
       {% endfor %}
-      {% if past_count == 0 %}
-        <div class="col col-12">
-          <p>No past events are available yet.</p>
-        </div>
+      {% assign fallback_needed = 4 | minus: past_count %}
+      {% if fallback_needed > 0 %}
+        {% for post in site.posts limit:fallback_needed %}
+          {% assign past_count = past_count | plus: 1 %}
+          <div class="col col-4 col-d-6 col-t-12">
+            <article class="event-card">
+              <p class="event-card__meta">{{ post.date | date: "%b %-d, %Y" }}</p>
+              <h3>{{ post.title }}</h3>
+              <p class="event-card__speaker">Community archive</p>
+              {% if post.excerpt %}<p>{{ post.excerpt | strip_html | strip_newlines | truncate: 180 }}</p>{% endif %}
+              <div class="event-card__links">
+                <a href="{{ post.url | relative_url }}">Details</a>
+              </div>
+            </article>
+          </div>
+        {% endfor %}
       {% endif %}
     </div>
   </div>
