@@ -83,7 +83,7 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
       {% assign past_count = 0 %}
       {% for event in events reversed %}
         {% assign event_ts = event.date | date: '%s' %}
-        {% if event_ts < now_ts and past_count < 6 %}
+        {% if event_ts < now_ts and past_count < 9 %}
           {% assign past_count = past_count | plus: 1 %}
           <div class="col col-4 col-d-6 col-t-12">
             <article class="event-card">
@@ -101,24 +101,15 @@ description: GenAI Gurus is a community exploring practical, technical, and soci
           </div>
         {% endif %}
       {% endfor %}
-      {% assign fallback_needed = 4 | minus: past_count %}
-      {% if fallback_needed > 0 %}
-        {% for post in site.posts limit:fallback_needed %}
-          {% assign past_count = past_count | plus: 1 %}
-          <div class="col col-4 col-d-6 col-t-12">
-            <article class="event-card">
-              {% assign post_image = post.image | default: "images/logo1.png" %}
-              <img class="event-card__image" src="{{ post_image | relative_url }}" alt="{{ post.title }} cover image" loading="lazy">
-              <p class="event-card__meta">{{ post.date | date: "%b %-d, %Y" }}</p>
-              <h3>{{ post.title }}</h3>
-              <p class="event-card__speaker">Community archive</p>
-              {% if post.excerpt %}<p>{{ post.excerpt | strip_html | strip_newlines | truncate: 180 }}</p>{% endif %}
-              <div class="event-card__links">
-                <a href="{{ post.url | relative_url }}">Details</a>
-              </div>
-            </article>
-          </div>
-        {% endfor %}
+      {% if past_count == 0 %}
+        <div class="col col-12">
+          <p>No past Meetup events are available yet.</p>
+        </div>
+      {% endif %}
+      {% if past_count > 0 %}
+        <div class="col col-12 events-section__footer">
+          <a class="button" href="https://www.meetup.com/genai-gurus/events/past/" target="_blank" rel="noopener noreferrer">See all past events on Meetup</a>
+        </div>
       {% endif %}
     </div>
   </div>
