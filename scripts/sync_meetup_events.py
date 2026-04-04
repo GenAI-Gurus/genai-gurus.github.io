@@ -205,6 +205,15 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
             elif isinstance(performer, list):
                 names = [str(p.get("name", "")).strip() for p in performer if isinstance(p, dict)]
                 speaker = ", ".join([n for n in names if n])
+            image_url = ""
+            image = node.get("image")
+            if isinstance(image, str):
+                image_url = image.strip()
+            elif isinstance(image, list):
+                for value in image:
+                    if isinstance(value, str) and value.strip():
+                        image_url = value.strip()
+                        break
 
             parsed_events.append(
                 {
@@ -215,7 +224,7 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
                     "location_label": location_name or "Online",
                     "meetup_url": str(node.get("url", "")).strip() or DEFAULT_EVENTS_URL,
                     "youtube_url": "",
-                    "image": "",
+                    "image": image_url,
                     "summary": description[:280],
                 }
             )

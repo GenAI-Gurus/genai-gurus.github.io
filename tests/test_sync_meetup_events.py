@@ -74,6 +74,28 @@ class SyncMeetupEventsTests(unittest.TestCase):
         self.assertEqual(events[0]["title"], "Past Meetup Event")
         self.assertEqual(events[0]["event_status"], "past")
 
+    def test_parse_ld_json_events_keeps_image_url(self):
+        html = '''
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": "Upcoming Meetup Event",
+          "startDate": "2026-04-15T19:00:00+02:00",
+          "url": "https://www.meetup.com/genai-gurus/events/313946334/",
+          "location": {"name": "Online"},
+          "description": "Speaker: Jane Doe",
+          "image": "https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg"
+        }
+        </script>
+        '''
+        events = mod.parse_ld_json_events(html)
+        self.assertEqual(len(events), 1)
+        self.assertEqual(
+            events[0]["image"],
+            "https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg",
+        )
+
     def test_extract_event_urls_handles_json_escaped_urls(self):
         html = r'''
         <script>
