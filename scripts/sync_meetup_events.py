@@ -243,6 +243,17 @@ def extract_image_from_event_html(event_html: str) -> str:
         r"https://secure\.meetupstatic\.com/photos/event/[^\"'\\s>]+",
         flags=re.IGNORECASE,
     )
+    og_image_pattern = re.compile(
+        r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
+        flags=re.IGNORECASE,
+    )
+    og_image_url = ""
+    og_match = og_image_pattern.search(event_html)
+    if og_match:
+        og_image_url = html.unescape(og_match.group(1)).strip()
+        if meetup_image_pattern.match(og_image_url):
+            return og_image_url
+
     srcset_pattern = re.compile(r'srcset=["\']([^"\']+)["\']', flags=re.IGNORECASE)
     src_pattern = re.compile(r'src=["\']([^"\']+)["\']', flags=re.IGNORECASE)
     candidates: list[tuple[int, str]] = []
@@ -273,13 +284,8 @@ def extract_image_from_event_html(event_html: str) -> str:
         if meetup_image_pattern.match(candidate_url):
             return candidate_url
 
-    og_image_pattern = re.compile(
-        r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
-        flags=re.IGNORECASE,
-    )
-    og_match = og_image_pattern.search(event_html)
-    if og_match:
-        return html.unescape(og_match.group(1)).strip()
+    if og_image_url:
+        return og_image_url
 
     script_pattern = re.compile(
         r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',

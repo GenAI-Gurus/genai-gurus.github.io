@@ -30,6 +30,23 @@ class SyncMeetupEventsTests(unittest.TestCase):
             "https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=1920",
         )
 
+    def test_extract_image_from_event_html_prefers_og_image_over_other_page_images(self):
+        html = """
+        <meta property="og:image" content="https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg" />
+        <img
+          srcset="
+            https://secure.meetupstatic.com/photos/event/d/9/2/9/event_514075593.jpeg?w=16 16w,
+            https://secure.meetupstatic.com/photos/event/d/9/2/9/event_514075593.jpeg?w=3840 3840w
+          "
+          src="https://secure.meetupstatic.com/photos/event/d/9/2/9/event_514075593.jpeg?w=3840"
+        />
+        """
+        image_url = mod.extract_image_from_event_html(html)
+        self.assertEqual(
+            image_url,
+            "https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg",
+        )
+
     def test_extract_image_from_event_html_prefers_og_image(self):
         html = """
         <meta property="og:image" content="https://images.meetupstatic.com/event.jpg" />
@@ -194,6 +211,16 @@ class SyncMeetupEventsTests(unittest.TestCase):
         self.assertEqual(len(hydrated), 1)
         self.assertEqual(
             hydrated[0]["image"],
+            "https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg",
+        )
+
+    def test_extract_image_from_saved_openclaw_fixture_prefers_event_cover(self):
+        html = Path(
+            "tests/OpenClaw - How It Works, Best Practices & Safety for Real-World Personal Agents, Wed, Apr 15, 2026, 7_00 PM _ Meetup.html"
+        ).read_text(encoding="utf-8")
+        image_url = mod.extract_image_from_event_html(html)
+        self.assertEqual(
+            image_url,
             "https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg",
         )
 
