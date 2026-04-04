@@ -2,6 +2,8 @@
 
 This repository hosts the Jekyll-powered website for **GenAI Gurus** at <https://genai-gurus.com>.
 
+For an agent-oriented repo map and edit guide, see [`AGENTS.md`](AGENTS.md).
+
 ## Local development
 
 ```bash
@@ -43,7 +45,7 @@ By default, the GitHub Actions workflow uses the script defaults for source URLs
 ### Manual sync
 
 ```bash
-python scripts/sync_meetup_events.py
+python3 scripts/sync_meetup_events.py
 ```
 
 ### GitHub Actions notes

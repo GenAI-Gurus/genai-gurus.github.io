@@ -3,3 +3,5 @@ _site/
 _sass/.DS_Store
 
 __pycache__/
+.bundle/
+vendor/bundle/

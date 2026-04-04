@@ -23,6 +23,7 @@ include:
 
 exclude:
   - _site
+  - AGENTS.md
 
 # Tags
 tag_page_dir: tag
