@@ -42,7 +42,8 @@ function formatDate(iso: string): string {
     <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {
         talks.map((talk) => {
-          const totalReach = talk.meetup_participants + talk.youtube_views;
+          const views = talk.youtube_views ?? 0;
+          const totalReach = talk.meetup_participants + views;
           return (
             <article class="group flex flex-col overflow-hidden rounded-2xl border border-brand-700/50 bg-gradient-to-b from-brand-800/40 to-brand-800/20 shadow-lg shadow-black/10 transition-all hover:border-brand-600/80 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1">
               <a
@@ -109,7 +110,7 @@ function formatDate(iso: string): string {
                   </div>
                   <div class="mt-1.5 flex gap-4 text-xs text-brand-400">
                     <span>{talk.meetup_participants} attendees</span>
-                    <span>{talk.youtube_views.toLocaleString()} views</span>
+                    {views > 0 && <span>{views.toLocaleString()} views</span>}
                   </div>
                 </div>
               </div>
