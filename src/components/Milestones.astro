@@ -3,9 +3,11 @@ import milestones from "@/data/milestones.json";
 import stats from "@/data/community_stats.json";
 ---
 
-<section id="milestones" class="py-20 md:py-28">
-  <div class="mx-auto max-w-4xl px-6">
-    <div class="mb-4 text-center text-sm font-semibold uppercase tracking-widest text-accent-500">
+<section id="milestones" class="relative py-20 md:py-28">
+  <div class="pointer-events-none absolute left-0 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-accent-500/3 blur-3xl"></div>
+
+  <div class="relative mx-auto max-w-4xl px-6">
+    <div class="mb-2 text-center text-sm font-semibold uppercase tracking-widest text-accent-500">
       Our Journey
     </div>
     <h2
@@ -15,7 +17,7 @@ import stats from "@/data/community_stats.json";
     </h2>
 
     <div class="relative mt-14">
-      <div class="absolute top-0 bottom-0 left-4 w-px bg-brand-700 md:left-1/2 md:-translate-x-px">
+      <div class="absolute top-0 bottom-0 left-4 w-px bg-gradient-to-b from-accent-500/30 via-brand-700 to-brand-700/30 md:left-1/2 md:-translate-x-px">
       </div>
 
       {
@@ -33,23 +35,28 @@ import stats from "@/data/community_stats.json";
             >
               <div class="absolute left-4 -translate-x-1/2 md:left-1/2">
                 <div
-                  class={`h-3 w-3 rounded-full border-2 ${isLive ? "border-accent-500 bg-accent-500" : "border-accent-500 bg-brand-950"}`}
+                  class={`h-3.5 w-3.5 rounded-full border-2 transition-all ${isLive ? "border-accent-500 bg-accent-500 shadow-lg shadow-accent-500/30" : "border-accent-500/60 bg-brand-950"}`}
                 />
+                {isLive && (
+                  <div class="absolute inset-0 h-3.5 w-3.5 animate-ping rounded-full bg-accent-500/30"></div>
+                )}
               </div>
 
               <div class="hidden md:block md:w-1/2" />
 
               <div class="ml-10 md:ml-0 md:w-1/2 md:px-8">
-                <span
-                  class={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${isLive ? "bg-accent-500/20 text-accent-400" : "bg-brand-800 text-brand-300"}`}
-                >
-                  {m.date}
-                </span>
-                <h3 class="mt-2 font-display text-lg font-semibold text-white">{m.label}</h3>
-                <p class="mt-1 text-sm leading-relaxed text-brand-300">{m.description}</p>
-                {displayValue && (
-                  <p class="mt-2 text-sm font-semibold text-accent-400">{displayValue}</p>
-                )}
+                <div class={`rounded-xl border p-5 transition-all hover:border-brand-600/80 ${isLive ? "border-accent-500/20 bg-accent-500/5" : "border-brand-700/40 bg-brand-800/20"}`}>
+                  <span
+                    class={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${isLive ? "bg-accent-500/20 text-accent-400" : "bg-brand-800 text-brand-300"}`}
+                  >
+                    {m.date}
+                  </span>
+                  <h3 class="mt-2 font-display text-lg font-semibold text-white">{m.label}</h3>
+                  <p class="mt-1 text-sm leading-relaxed text-brand-300">{m.description}</p>
+                  {displayValue && (
+                    <p class="mt-2 text-sm font-semibold text-accent-400">{displayValue}</p>
+                  )}
+                </div>
               </div>
             </div>
           );

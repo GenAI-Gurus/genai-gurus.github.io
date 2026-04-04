@@ -25,9 +25,11 @@ function formatMemberSince(iso: string): string {
 }
 ---
 
-<section id="team" class="bg-brand-900 py-20 md:py-28">
-  <div class="mx-auto max-w-6xl px-6">
-    <div class="mb-4 text-sm font-semibold uppercase tracking-widest text-accent-500">
+<section id="team" class="relative bg-brand-900 py-20 md:py-28">
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-brand-950/50 via-transparent to-brand-950/50"></div>
+
+  <div class="relative mx-auto max-w-6xl px-6">
+    <div class="mb-2 text-sm font-semibold uppercase tracking-widest text-accent-500">
       Core Team
     </div>
     <h2 class="font-display text-3xl font-bold tracking-tight text-white md:text-4xl">
@@ -36,18 +38,29 @@ function formatMemberSince(iso: string): string {
 
     <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {
-        sorted.map((member) => {
+        sorted.map((member, i) => {
           const score = member.hosted_events * 5 + member.joined_events;
+          const isTop = i === 0;
           return (
-            <div class="flex flex-col items-center rounded-xl border border-brand-700 bg-brand-800/40 p-6 text-center">
-              <div class="h-24 w-24 overflow-hidden rounded-full bg-brand-600">
-                {member.photo && (
+            <div class={`group relative flex flex-col items-center overflow-hidden rounded-2xl border bg-gradient-to-b p-6 text-center transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 ${isTop ? "border-accent-500/30 from-accent-500/5 to-brand-800/40" : "border-brand-700/50 from-brand-800/40 to-brand-800/20"}`}>
+              {isTop && (
+                <div class="absolute top-3 right-3 rounded-full bg-accent-500/15 px-2 py-0.5 text-xs font-semibold text-accent-400">
+                  Top contributor
+                </div>
+              )}
+
+              <div class={`h-24 w-24 overflow-hidden rounded-full ring-2 ${isTop ? "ring-accent-500/40" : "ring-brand-600"}`}>
+                {member.photo ? (
                   <img
                     src={member.photo}
                     alt={member.name}
-                    class="h-full w-full object-cover"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                     loading="lazy"
                   />
+                ) : (
+                  <div class="flex h-full w-full items-center justify-center bg-brand-700 text-2xl font-bold text-brand-300">
+                    {member.name.charAt(0)}
+                  </div>
                 )}
               </div>
 
@@ -58,18 +71,18 @@ function formatMemberSince(iso: string): string {
                 href={member.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="mt-3 text-brand-400 transition hover:text-accent-500"
+                class="mt-3 flex h-8 w-8 items-center justify-center rounded-lg text-brand-400 transition hover:bg-white/5 hover:text-accent-500"
                 aria-label={`${member.name} on LinkedIn`}
               >
-                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                 </svg>
               </a>
 
-              <div class="mt-4 w-full border-t border-brand-700 pt-4">
-                <p class="text-2xl font-bold text-accent-500">{score}</p>
+              <div class="mt-4 w-full border-t border-brand-700/50 pt-4">
+                <p class={`font-display text-2xl font-bold ${isTop ? "text-accent-500" : "text-accent-500"}`}>{score}</p>
                 <p class="text-xs text-brand-400">participation score</p>
-                <p class="mt-2 text-xs text-brand-400">
+                <p class="mt-2 text-xs text-brand-500">
                   Member since {formatMemberSince(member.member_since)}
                 </p>
               </div>
@@ -79,13 +92,13 @@ function formatMemberSince(iso: string): string {
       }
     </div>
 
-    <div class="mt-8 text-center">
+    <div class="mt-10 text-center">
       <a
         href="/leaderboard"
-        class="inline-flex items-center gap-2 text-sm font-medium text-accent-400 transition hover:text-accent-300"
+        class="group inline-flex items-center gap-2 rounded-xl border border-brand-700/50 bg-brand-800/20 px-5 py-3 text-sm font-medium text-accent-400 transition-all hover:border-accent-500/30 hover:bg-accent-500/5 hover:text-accent-300"
       >
         See full top 100 leaderboard
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
         </svg>
       </a>
