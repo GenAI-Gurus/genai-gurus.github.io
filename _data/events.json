@@ -7,7 +7,7 @@
     "location_label": "Online",
     "meetup_url": "https://www.meetup.com/genai-gurus/events/313946334/",
     "youtube_url": "",
-    "image": "",
+    "image": "https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=3840",
     "summary": "GenAI Gurus - Generative Artificial Intelligence In this talk we'll go over the main building blocks behind personal agents like OpenClaw and how they fit together in practice. From there, we'll look at best practices for making them actually useful, and the safety patterns that "
   }
 ]

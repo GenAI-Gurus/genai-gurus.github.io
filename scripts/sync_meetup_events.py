@@ -228,6 +228,106 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
     return ordered
 
 
+def extract_image_from_event_html(event_html: str) -> str:
+    meetup_image_pattern = re.compile(
+        r"https://secure\.meetupstatic\.com/photos/event/[^\"'\\s>]+",
+        flags=re.IGNORECASE,
+    )
+    srcset_pattern = re.compile(r'srcset=["\']([^"\']+)["\']', flags=re.IGNORECASE)
+    src_pattern = re.compile(r'src=["\']([^"\']+)["\']', flags=re.IGNORECASE)
+    candidates: list[tuple[int, str]] = []
+
+    for srcset_match in srcset_pattern.finditer(event_html):
+        srcset_value = srcset_match.group(1)
+        for entry in srcset_value.split(","):
+            cleaned = entry.strip()
+            if not cleaned:
+                continue
+            parts = cleaned.split()
+            candidate_url = parts[0]
+            if not meetup_image_pattern.match(candidate_url):
+                continue
+            width = 0
+            if len(parts) > 1 and parts[1].endswith("w"):
+                try:
+                    width = int(parts[1][:-1])
+                except ValueError:
+                    width = 0
+            candidates.append((width, candidate_url))
+
+    if candidates:
+        return max(candidates, key=lambda item: item[0])[1]
+
+    for src_match in src_pattern.finditer(event_html):
+        candidate_url = src_match.group(1).strip()
+        if meetup_image_pattern.match(candidate_url):
+            return candidate_url
+
+    og_image_pattern = re.compile(
+        r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
+        flags=re.IGNORECASE,
+    )
+    og_match = og_image_pattern.search(event_html)
+    if og_match:
+        return html.unescape(og_match.group(1)).strip()
+
+    script_pattern = re.compile(
+        r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    for match in script_pattern.findall(event_html):
+        candidate = match.strip()
+        if not candidate:
+            continue
+        try:
+            payload = json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+
+        nodes = payload if isinstance(payload, list) else [payload]
+        for node in nodes:
+            if not isinstance(node, dict):
+                continue
+            image = node.get("image")
+            if isinstance(image, str) and image.strip():
+                return image.strip()
+            if isinstance(image, list):
+                for value in image:
+                    if isinstance(value, str) and value.strip():
+                        return value.strip()
+    return ""
+
+
+def fill_event_images(events: list[dict[str, str]], headers: dict[str, str]) -> list[dict[str, str]]:
+    updated_events: list[dict[str, str]] = []
+    image_cache: dict[str, str] = {}
+    for event in events:
+        normalized_event = dict(event)
+        meetup_url = str(normalized_event.get("meetup_url", "")).strip()
+        existing_image = str(normalized_event.get("image", "")).strip()
+        if existing_image or not meetup_url:
+            updated_events.append(normalized_event)
+            continue
+
+        if meetup_url in image_cache:
+            normalized_event["image"] = image_cache[meetup_url]
+            updated_events.append(normalized_event)
+            continue
+
+        try:
+            event_html = fetch_url(meetup_url, headers=headers, timeout=20)
+            image_url = extract_image_from_event_html(event_html)
+        except (urllib.error.URLError, RuntimeError, ValueError) as exc:
+            debug(f"fill_event_images: failed to fetch {meetup_url}: {exc}")
+            image_url = ""
+
+        image_cache[meetup_url] = image_url
+        normalized_event["image"] = image_url
+        updated_events.append(normalized_event)
+
+    return updated_events
+
+
 def merge_events(*event_lists: list[dict[str, str]]) -> list[dict[str, str]]:
     merged: dict[str, dict[str, str]] = {}
     for events in event_lists:
@@ -408,6 +508,7 @@ def fetch_events() -> list[dict[str, str]]:
             debug(message)
 
     merged_events = merge_events(ical_events, past_events)
+    merged_events = fill_event_images(merged_events, headers=headers)
     debug(
         "Merged counts: "
         f"ical={len(ical_events)}, past={len(past_events)}, merged={len(merged_events)}, "

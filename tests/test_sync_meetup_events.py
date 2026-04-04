@@ -10,6 +10,34 @@ spec.loader.exec_module(mod)
 
 
 class SyncMeetupEventsTests(unittest.TestCase):
+    def test_extract_image_from_event_html_prefers_meetup_event_photo_from_srcset(self):
+        html = """
+        <meta property="og:image" content="https://images.meetupstatic.com/group-logo.jpeg" />
+        <img
+          alt="OpenClaw - How It Works"
+          srcset="
+            https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=640 640w,
+            https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=1920 1920w
+          "
+          src="https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=3840"
+        />
+        """
+        image_url = mod.extract_image_from_event_html(html)
+        self.assertEqual(
+            image_url,
+            "https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=1920",
+        )
+
+    def test_extract_image_from_event_html_prefers_og_image(self):
+        html = """
+        <meta property="og:image" content="https://images.meetupstatic.com/event.jpg" />
+        <script type="application/ld+json">
+          {"@type":"Event","image":"https://images.meetupstatic.com/other.jpg"}
+        </script>
+        """
+        image_url = mod.extract_image_from_event_html(html)
+        self.assertEqual(image_url, "https://images.meetupstatic.com/event.jpg")
+
     def test_extract_event_urls_handles_relative_and_absolute_links(self):
         html = '''
         <a href="/genai-gurus/events/312645423/">Past A</a>
@@ -70,6 +98,32 @@ class SyncMeetupEventsTests(unittest.TestCase):
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]["title"], "GenAI Past Session")
         self.assertEqual(events[0]["meetup_url"], "https://www.meetup.com/genai-gurus/events/312645423/")
+
+    def test_fill_event_images_uses_event_page_image(self):
+        events = [
+            {
+                "title": "OpenClaw",
+                "date": "2026-04-15T19:00:00Z",
+                "event_status": "upcoming",
+                "speaker_name": "",
+                "location_label": "Online",
+                "meetup_url": "https://www.meetup.com/genai-gurus/events/313946334/",
+                "youtube_url": "",
+                "image": "",
+                "summary": "",
+            }
+        ]
+
+        original_fetch_url = mod.fetch_url
+        try:
+            mod.fetch_url = lambda *_args, **_kwargs: (
+                '<meta property="og:image" content="https://images.meetupstatic.com/correct-image.jpg" />'
+            )
+            updated = mod.fill_event_images(events, headers={})
+        finally:
+            mod.fetch_url = original_fetch_url
+
+        self.assertEqual(updated[0]["image"], "https://images.meetupstatic.com/correct-image.jpg")
 
 
 if __name__ == "__main__":
