@@ -67,5 +67,11 @@ Not every include or script is part of the current user experience.
 
 1. Confirm whether the task is about homepage/event data, static pages, posts, styling, or the sync pipeline.
 2. Edit the smallest set of files that owns that behavior.
-3. Run `python -m unittest tests/test_sync_meetup_events.py` for sync logic changes.
+3. Run `python3 -m unittest tests/test_sync_meetup_events.py` for sync logic changes.
 4. Run `bundle exec jekyll build` or `bundle exec jekyll serve` for template/style/content changes when available.
+5. After changes are verified and committed, push the branch to the remote repository so GitHub Pages or related GitHub Actions deployment triggers can run.
+
+## Deployment Reminder
+
+- Do not leave finished feature work only in a local commit when the intent is to ship it.
+- For changes meant to go live, push to the remote repository after verification so deployment can happen.
