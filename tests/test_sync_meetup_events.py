@@ -12,6 +12,24 @@ spec.loader.exec_module(mod)
 
 
 class SyncMeetupEventsTests(unittest.TestCase):
+    def test_extract_image_from_event_html_prefers_meetup_event_photo_from_srcset(self):
+        html = """
+        <meta property="og:image" content="https://images.meetupstatic.com/group-logo.jpeg" />
+        <img
+          alt="OpenClaw - How It Works"
+          srcset="
+            https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=640 640w,
+            https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=1920 1920w
+          "
+          src="https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=3840"
+        />
+        """
+        image_url = mod.extract_image_from_event_html(html)
+        self.assertEqual(
+            image_url,
+            "https://secure.meetupstatic.com/photos/event/8/c/a/5/highres_533436005.webp?w=1920",
+        )
+
     def test_extract_image_from_event_html_prefers_og_image(self):
         html = """
         <meta property="og:image" content="https://images.meetupstatic.com/event.jpg" />

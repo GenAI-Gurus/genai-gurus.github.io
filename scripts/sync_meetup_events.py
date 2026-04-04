@@ -230,6 +230,40 @@ def parse_ld_json_events(events_html: str) -> list[dict[str, str]]:
 
 
 def extract_image_from_event_html(event_html: str) -> str:
+    meetup_image_pattern = re.compile(
+        r"https://secure\.meetupstatic\.com/photos/event/[^\"'\\s>]+",
+        flags=re.IGNORECASE,
+    )
+    srcset_pattern = re.compile(r'srcset=["\']([^"\']+)["\']', flags=re.IGNORECASE)
+    src_pattern = re.compile(r'src=["\']([^"\']+)["\']', flags=re.IGNORECASE)
+    candidates: list[tuple[int, str]] = []
+
+    for srcset_match in srcset_pattern.finditer(event_html):
+        srcset_value = srcset_match.group(1)
+        for entry in srcset_value.split(","):
+            cleaned = entry.strip()
+            if not cleaned:
+                continue
+            parts = cleaned.split()
+            candidate_url = parts[0]
+            if not meetup_image_pattern.match(candidate_url):
+                continue
+            width = 0
+            if len(parts) > 1 and parts[1].endswith("w"):
+                try:
+                    width = int(parts[1][:-1])
+                except ValueError:
+                    width = 0
+            candidates.append((width, candidate_url))
+
+    if candidates:
+        return max(candidates, key=lambda item: item[0])[1]
+
+    for src_match in src_pattern.finditer(event_html):
+        candidate_url = src_match.group(1).strip()
+        if meetup_image_pattern.match(candidate_url):
+            return candidate_url
+
     og_image_pattern = re.compile(
         r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
         flags=re.IGNORECASE,
