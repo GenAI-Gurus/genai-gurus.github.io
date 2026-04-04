@@ -1,0 +1,60 @@
+---
+import milestones from "@/data/milestones.json";
+import stats from "@/data/community_stats.json";
+---
+
+<section id="milestones" class="py-20 md:py-28">
+  <div class="mx-auto max-w-4xl px-6">
+    <div class="mb-4 text-center text-sm font-semibold uppercase tracking-widest text-accent-500">
+      Our Journey
+    </div>
+    <h2
+      class="text-center font-display text-3xl font-bold tracking-tight text-white md:text-4xl"
+    >
+      Community milestones
+    </h2>
+
+    <div class="relative mt-14">
+      <div class="absolute top-0 bottom-0 left-4 w-px bg-brand-700 md:left-1/2 md:-translate-x-px">
+      </div>
+
+      {
+        milestones.map((m, i) => {
+          const isLive = "is_live" in m && m.is_live;
+          const displayValue = isLive
+            ? `${stats.meetup_members.toLocaleString()}+ members`
+            : "total_reach" in m
+              ? `${(m.total_reach as number).toLocaleString()}+ total reach`
+              : "";
+
+          return (
+            <div
+              class={`relative mb-10 flex items-start gap-6 md:gap-0 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
+            >
+              <div class="absolute left-4 -translate-x-1/2 md:left-1/2">
+                <div
+                  class={`h-3 w-3 rounded-full border-2 ${isLive ? "border-accent-500 bg-accent-500" : "border-accent-500 bg-brand-950"}`}
+                />
+              </div>
+
+              <div class="hidden md:block md:w-1/2" />
+
+              <div class="ml-10 md:ml-0 md:w-1/2 md:px-8">
+                <span
+                  class={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${isLive ? "bg-accent-500/20 text-accent-400" : "bg-brand-800 text-brand-300"}`}
+                >
+                  {m.date}
+                </span>
+                <h3 class="mt-2 font-display text-lg font-semibold text-white">{m.label}</h3>
+                <p class="mt-1 text-sm leading-relaxed text-brand-300">{m.description}</p>
+                {displayValue && (
+                  <p class="mt-2 text-sm font-semibold text-accent-400">{displayValue}</p>
+                )}
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

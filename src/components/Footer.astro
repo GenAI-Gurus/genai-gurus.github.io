@@ -1,0 +1,81 @@
+---
+import site from "@/data/site.json";
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-brand-800 bg-brand-950 py-12">
+  <div class="mx-auto max-w-6xl px-6">
+    <div class="grid gap-8 md:grid-cols-3">
+      <div>
+        <a href="/" class="inline-block">
+          <img src="/images/logo.svg" alt="GenAI Gurus" class="h-8" />
+        </a>
+        <p class="mt-4 max-w-xs text-sm leading-relaxed text-brand-400">
+          A global community for builders, researchers, and leaders exploring applied Generative AI.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-semibold uppercase tracking-wider text-brand-300">Community</h4>
+        <ul class="mt-4 space-y-3 text-sm">
+          <li>
+            <a
+              href={site.links.meetup}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-brand-400 transition hover:text-white">Meetup Group</a
+            >
+          </li>
+          <li>
+            <a
+              href={site.links.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-brand-400 transition hover:text-white">LinkedIn Page</a
+            >
+          </li>
+          <li>
+            <a
+              href={site.links.youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-brand-400 transition hover:text-white">YouTube Channel</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-semibold uppercase tracking-wider text-brand-300">Engage</h4>
+        <ul class="mt-4 space-y-3 text-sm">
+          <li>
+            <a
+              href={site.links.speak_form}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-brand-400 transition hover:text-white">Apply to speak</a
+            >
+          </li>
+          <li>
+            <a
+              href={site.links.partner_form}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-brand-400 transition hover:text-white">Partner with us</a
+            >
+          </li>
+          <li>
+            <a
+              href={`mailto:${site.links.email}`}
+              class="text-brand-400 transition hover:text-white">Contact</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-10 border-t border-brand-800 pt-6 text-center text-xs text-brand-500">
+      &copy; {year} GenAI Gurus. All rights reserved.
+    </div>
+  </div>
+</footer>

@@ -1,59 +1,103 @@
-# GenAI Gurus Website
+# GenAI Gurus — genai-gurus.com
 
-This repository hosts the Jekyll-powered website for **GenAI Gurus** at <https://genai-gurus.com>.
+Community landing page for [GenAI Gurus](https://genai-gurus.com), a global community for builders, researchers, and leaders exploring applied Generative AI.
 
-For an agent-oriented repo map and edit guide, see [`AGENTS.md`](AGENTS.md).
+Built with **Astro** + **Tailwind CSS v4**, deployed to **GitHub Pages**.
 
-## Local development
-
-```bash
-bundle install
-bundle exec jekyll serve
-```
-
-## Event data and maintenance
-
-The homepage reads event data from `_data/events.json`.
-Discovered Meetup event URLs are persisted in `_data/event_links.json`.
-
-- **Automated sync:** `.github/workflows/sync-meetup-events.yml` runs every 12 hours, on manual dispatch, on pull requests targeting `main`/`master`, and on all pushes to `main`/`master`.
-- **Sync script:** `scripts/sync_meetup_events.py` fetches Meetup data and writes deterministic JSON output.
-  - Primary source: Meetup iCal feed.
-  - Fallback source: JSON-LD event data from the Meetup events page.
-- **Commit behavior:** The workflow only commits when `_data/events.json` actually changes.
-  - It also commits when `_data/event_links.json` changes (new discovered event URLs).
-- **Failure behavior:** If Meetup fetch fails, the script logs a warning and keeps the last successful local data file.
-  - In GitHub Actions, strict mode is enabled so fetch failures fail the workflow run (instead of silently succeeding).
-  - If fresh fetches contain no past events (e.g., source requires login), cached past events already in `_data/events.json` are preserved.
-
-### Optional source overrides
-
-- `MEETUP_ICAL_URL` (optional): override iCal endpoint used by the sync script.
-  - If not set, the script defaults to `https://www.meetup.com/genai-gurus/events/ical/`.
-- `MEETUP_EVENTS_URL` (optional): override Meetup events page URL used as the JSON-LD fallback source.
-  - If not set, the script defaults to `https://www.meetup.com/genai-gurus/events/`.
-- `MEETUP_PAST_EVENTS_URL` (optional): override Meetup past-events page URL used to supplement iCal with recent historical events.
-  - If not set, the script defaults to `https://www.meetup.com/genai-gurus/events/past/`.
-- `MEETUP_EVENTS_API_URL` (optional): override Meetup REST events endpoint used as an additional fallback for past events.
-  - If not set, the script defaults to `https://api.meetup.com/genai-gurus/events`.
-- `MEETUP_SYNC_STRICT` (optional): if truthy (`1`, `true`, `yes`, `on`), the script exits non-zero when fetch fails.
-  - Useful in CI to surface data-source outages immediately.
-- `MEETUP_SYNC_DEBUG` (optional): if truthy, emits detailed fetch/parse diagnostics to stdout (source URLs, payload sizes, parsed counts, and sample event URLs).
-
-By default, the GitHub Actions workflow uses the script defaults for source URLs (no secrets required).
-
-### Manual sync
+## Quick start
 
 ```bash
-python3 scripts/sync_meetup_events.py
+npm install
+npm run dev        # local dev server at localhost:4321
 ```
 
-### GitHub Actions notes
+## Scripts
 
-- Scheduled (`cron`) workflows only run from the repository default branch.
-- If the schedule appears not to run, use **Actions → Sync Meetup events → Run workflow** once to validate permissions and fetch behavior.
+| Command            | What it does                                              |
+| ------------------ | --------------------------------------------------------- |
+| `npm run dev`      | Start the Astro dev server with hot reload                |
+| `npm run build`    | Production build into `dist/`                             |
+| `npm run preview`  | Preview the production build locally                      |
+| `npm run lint`     | Run ESLint across the project                             |
+| `npm run format`   | Format all source files with Prettier                     |
 
-## Notes
+## Project structure
 
-- Generated build output (`_site/`) should not be committed.
-- Keep `CNAME` intact for GitHub Pages custom domain mapping.
+```
+public/                 Static assets copied as-is into the build
+  CNAME                 Custom domain for GitHub Pages
+  images/logo.svg       GenAI Gurus logo
+
+src/
+  components/           Astro components (one per landing page section)
+    Header.astro
+    Hero.astro
+    UpcomingEvent.astro
+    HighlightedTalks.astro
+    CoreTeam.astro
+    Milestones.astro
+    About.astro
+    SpeakAndPartner.astro
+    Footer.astro
+  content/
+    about.md            About section copy
+  data/                 JSON data consumed at build time
+    site.json           Site-wide metadata and social links
+    upcoming_event.json Next Meetup event (auto-updated monthly)
+    featured_talks.json 6 curated past talks (manually edited)
+    core_team.json      4 Core Team members (manually edited)
+    milestones.json     Community milestones (manually edited)
+    community_stats.json Aggregate stats (auto-updated monthly)
+    leaderboard.json    Top 100 by participation score (auto-updated monthly)
+  layouts/
+    Base.astro          HTML shell, meta tags, font loading
+  pages/
+    index.astro         Landing page (composes all section components)
+    leaderboard.astro   /leaderboard — ranked table of top 100
+  styles/
+    global.css          Tailwind v4 import and brand theme tokens
+
+scripts/
+  sync_meetup_data.py   Python script that crawls Meetup and writes data JSON files
+
+.github/workflows/
+  deploy.yml            Build and deploy to GitHub Pages on push to main
+  sync-data.yml         Run sync script monthly and commit updated data
+```
+
+## Editing content
+
+### Manual content (edit directly in git)
+
+- **Featured talks** — edit `src/data/featured_talks.json` (exactly 6 curated entries).
+- **Core Team** — edit `src/data/core_team.json` (4 members; order is computed by score at build time).
+- **Milestones** — edit `src/data/milestones.json`.
+- **About copy** — edit `src/content/about.md`.
+- **Social links and form URLs** — edit `src/data/site.json`.
+
+### Auto-generated content
+
+These files are updated monthly by the `sync-data.yml` GitHub Action:
+
+- `src/data/upcoming_event.json`
+- `src/data/community_stats.json`
+- `src/data/leaderboard.json`
+
+You can also run the sync manually:
+
+```bash
+python scripts/sync_meetup_data.py
+```
+
+## Deployment
+
+Push to `main` triggers the `deploy.yml` workflow, which builds the Astro site and deploys it to GitHub Pages. The custom domain `genai-gurus.com` is set via `public/CNAME`.
+
+## Recommended editor extensions (Cursor / VS Code)
+
+1. [Astro](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode)
+2. [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
+3. [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+4. [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
+Enable **Format on Save** and set Prettier as the default formatter.

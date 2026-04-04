@@ -1,0 +1,59 @@
+---
+import Base from "@/layouts/Base.astro";
+import leaderboard from "@/data/leaderboard.json";
+---
+
+<Base title="Leaderboard — GenAI Gurus" description="Top 100 community contributors ranked by participation score">
+  <section class="pt-32 pb-20 md:pt-40 md:pb-28">
+    <div class="mx-auto max-w-3xl px-6">
+      <a
+        href="/"
+        class="mb-8 inline-flex items-center gap-2 text-sm text-brand-400 transition hover:text-white"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        </svg>
+        Back to home
+      </a>
+
+      <h1 class="font-display text-3xl font-bold tracking-tight text-white md:text-4xl">
+        Community Leaderboard
+      </h1>
+      <p class="mt-3 text-brand-300">
+        Top 100 participants ranked by participation score.
+        Score = hosted events &times; 5 + joined events &times; 1.
+      </p>
+
+      <div class="mt-10 overflow-hidden rounded-xl border border-brand-700">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-brand-800/80 text-xs uppercase tracking-wider text-brand-300">
+            <tr>
+              <th class="px-6 py-4 font-semibold">Rank</th>
+              <th class="px-6 py-4 font-semibold">Name</th>
+              <th class="px-6 py-4 text-right font-semibold">Score</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-brand-800">
+            {
+              leaderboard.map((entry) => (
+                <tr class="transition hover:bg-brand-800/30">
+                  <td class="px-6 py-3.5 font-medium text-brand-300">
+                    {entry.rank <= 3 ? (
+                      <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20 text-xs font-bold text-accent-400">
+                        {entry.rank}
+                      </span>
+                    ) : (
+                      entry.rank
+                    )}
+                  </td>
+                  <td class="px-6 py-3.5 font-medium text-white">{entry.name}</td>
+                  <td class="px-6 py-3.5 text-right font-semibold text-accent-500">{entry.score}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</Base>

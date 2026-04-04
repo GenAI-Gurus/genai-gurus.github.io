@@ -1,0 +1,30 @@
+[
+  {
+    "date": "June 2023",
+    "label": "GenAI Gurus created",
+    "description": "The community was founded to bring together AI practitioners and leaders."
+  },
+  {
+    "date": "May–Oct 2024",
+    "label": "Project incubator organized",
+    "description": "A multi-month incubator program for hands-on GenAI projects."
+  },
+  {
+    "date": "Early 2025",
+    "label": "Passed 1,000 Meetup members",
+    "description": "The community crossed the 1,000-member milestone on Meetup."
+  },
+  {
+    "date": "April 2026",
+    "label": "50 events and growing reach",
+    "description": "Reached 50 events with a combined participant and viewer reach of over 5,000.",
+    "total_reach": 5000
+  },
+  {
+    "date": "Today",
+    "label": "Community keeps growing",
+    "description": "Over 1,500 members and counting.",
+    "member_count": 1500,
+    "is_live": true
+  }
+]

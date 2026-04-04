@@ -2,76 +2,93 @@
 
 ## Purpose
 
-This repository powers <https://genai-gurus.com> as a Jekyll site.
-The current product is a community homepage centered on Meetup events, plus a small set of static pages and blog-style posts.
+This repository powers <https://genai-gurus.com> as an Astro static site deployed to GitHub Pages.
+The product is a community landing page with a leaderboard subpage.
 
 ## Fast Start
 
-- Local preview: `bundle install` then `bundle exec jekyll serve`
-- Build only: `bundle exec jekyll build`
-- Manual Meetup sync: `python3 scripts/sync_meetup_events.py`
-- Sync script tests: `python3 -m unittest tests/test_sync_meetup_events.py`
+- Install: `npm install`
+- Dev server: `npm run dev`
+- Production build: `npm run build`
+- Meetup data sync: `python scripts/sync_meetup_data.py`
 
 ## Repo Map
 
-- `index.html`: custom homepage. This is the main entry point and reads from `site.data.events` and `site.data.settings`.
-- `_data/settings.yml`: site-wide copy, branding, links, default images, and community text.
-- `_data/events.json`: generated event data rendered on the homepage.
-- `_data/event_links.json`: cache of discovered Meetup event URLs used by the sync script.
-- `_pages/`: static pages using `layout: page`. Current examples are `about.md` and `courses.md`.
-- `_posts/`: article/event recap posts using `layout: post`. These feed `search.json` and post pages, but they are not the homepage source of truth.
-- `_layouts/`, `_includes/`, `_sass/`, `js/common.js`: theme/layout/style code.
-- `scripts/sync_meetup_events.py`: fetches Meetup data and writes deterministic JSON output for Jekyll.
-- `tests/test_sync_meetup_events.py`: parser/image extraction coverage for the sync script.
-- `.github/workflows/sync-meetup-events.yml`: scheduled and on-demand event refresh workflow.
+### Pages
+
+- `src/pages/index.astro` — landing page, composes section components in spec order.
+- `src/pages/leaderboard.astro` — `/leaderboard`, reads `leaderboard.json`.
+
+### Layouts and Components
+
+- `src/layouts/Base.astro` — HTML shell, `<head>`, font loading, wraps Header + Footer.
+- `src/components/Header.astro` — fixed nav bar with logo and section anchors.
+- `src/components/Hero.astro` — headline, value prop, CTAs, stats strip.
+- `src/components/UpcomingEvent.astro` — next Meetup event card.
+- `src/components/HighlightedTalks.astro` — 2×3 grid of curated past talks.
+- `src/components/CoreTeam.astro` — 4 team member cards sorted by participation score.
+- `src/components/Milestones.astro` — timeline of community milestones.
+- `src/components/About.astro` — community identity and pillars.
+- `src/components/SpeakAndPartner.astro` — CTAs linking to Google Forms.
+- `src/components/Footer.astro` — logo, social links, engagement links, copyright.
+
+### Data
+
+- `src/data/site.json` — site-wide config: title, social URLs, form URLs.
+- `src/data/upcoming_event.json` — **generated** — next Meetup event.
+- `src/data/featured_talks.json` — **manual** — 6 curated highlighted talks.
+- `src/data/core_team.json` — **manual** — 4 Core Team members with score inputs.
+- `src/data/milestones.json` — **manual** — 5 community milestones.
+- `src/data/community_stats.json` — **generated** — aggregate community numbers.
+- `src/data/leaderboard.json` — **generated** — top 100 ranked participants.
+- `src/content/about.md` — **manual** — about section long-form copy.
+
+### Scripts and CI
+
+- `scripts/sync_meetup_data.py` — crawls Meetup (iCal + HTML + LD+JSON), writes generated data files.
+- `.github/workflows/deploy.yml` — builds Astro and deploys to GitHub Pages on push to `main`.
+- `.github/workflows/sync-data.yml` — runs sync script monthly, commits updated JSON.
+
+### Styling
+
+- `src/styles/global.css` — Tailwind v4 import, brand color tokens (`brand-*`, `accent-*`), font config.
+- Brand palette: dark navy backgrounds (`brand-950` to `brand-50`), amber/gold accents (`accent-500: #F6B141`).
+
+### Config
+
+- `astro.config.mjs` — Astro config, Tailwind via `@tailwindcss/vite` plugin.
+- `tsconfig.json` — strict mode, `@/*` path alias to `src/*`.
+- `.prettierrc` — Prettier with `prettier-plugin-astro` and `prettier-plugin-tailwindcss`.
+- `eslint.config.js` — flat config with `eslint-plugin-astro`.
+- `.cursor/rules/project.mdc` — AI guardrails (no startup aesthetics, preserve IA, static-first).
 
 ## Where To Edit
 
-- Homepage copy, CTA labels, social links: `index.html` and `_data/settings.yml`
-- SEO/meta tags and global CSS entrypoint: `_includes/head.html`
-- Header or footer navigation: `_includes/header.html` and `_includes/footer.html`
-- Shared page shell: `_layouts/default.html`
-- Static page layout: `_layouts/page.html`
-- Post layout/chrome: `_layouts/post.html`
-- Styling: matching partials under `_sass/`
-- Static pages: `_pages/`
-- Blog posts: `_posts/`
-- Event ingestion or event schema: `scripts/sync_meetup_events.py` and `tests/test_sync_meetup_events.py`
+- **Landing page section order** — `src/pages/index.astro` (component composition order).
+- **Section content and layout** — matching component in `src/components/`.
+- **Social links, form URLs** — `src/data/site.json`.
+- **Curated talks** — `src/data/featured_talks.json`.
+- **Team members** — `src/data/core_team.json`.
+- **Theme colors, fonts** — `src/styles/global.css` `@theme` block.
+- **Meta tags, fonts** — `src/layouts/Base.astro` `<head>`.
+- **Meetup crawl logic** — `scripts/sync_meetup_data.py`.
 
 ## Guardrails
 
-- Do not hand-edit `_data/events.json` or `_data/event_links.json` for routine content changes. Prefer fixing the sync script or rerunning it.
-- Preserve `CNAME`.
-- Do not commit `_site/`.
-- If you change the event object shape, update `index.html` and the sync tests together.
-- Event dates are stored as UTC ISO timestamps with a trailing `Z`; homepage logic depends on that format.
-- `search.json` indexes `site.posts` only. It does not index Meetup events or static pages.
+- Do not hand-edit `upcoming_event.json`, `community_stats.json`, or `leaderboard.json` for routine updates — run the sync script or wait for the monthly Action.
+- Preserve `public/CNAME`.
+- Do not commit `node_modules/`, `dist/`, or `.astro/`.
+- The spec of record is `site-functional-spec.md` — consult it for information architecture and design rules.
+- Highlighted talks are always manually curated (exactly 6). Never auto-select them.
+- Core Team card order is computed by score (`hosted_events × 5 + joined_events × 1`) — do not manually reorder.
 
-## Theme Notes
+## Score Formula
 
-This repo started from the Zolan Jekyll theme and still contains some older theme components.
-Not every include or script is part of the current user experience.
+```
+score = hosted_events × 5 + joined_events × 1
+```
 
-- The homepage is custom and event-driven, not a default blog index.
-- Search assets are still loaded, but the current header does not expose a search button/input.
-- Instagram, subscribe, and some other theme modules are present in the codebase but are not core to the current site flow.
-- Before editing a theme partial, confirm it is actually referenced by an active layout/include path.
+- `hosted_events` — events hosted as shown on Meetup.
+- `joined_events` — RSVP joined on Meetup.
 
-## Known Quirks
-
-- `_pages/about.md` currently publishes at `/aboutus/`.
-- `_layouts/post.html` links the author name to `/about/`, which does not match the current page permalink.
-- If you choose to fix that mismatch, treat it as a deliberate site change rather than incidental cleanup.
-
-## Suggested Workflow
-
-1. Confirm whether the task is about homepage/event data, static pages, posts, styling, or the sync pipeline.
-2. Edit the smallest set of files that owns that behavior.
-3. Run `python3 -m unittest tests/test_sync_meetup_events.py` for sync logic changes.
-4. Run `bundle exec jekyll build` or `bundle exec jekyll serve` for template/style/content changes when available.
-5. After changes are verified and committed, push the branch to the remote repository so GitHub Pages or related GitHub Actions deployment triggers can run.
-
-## Deployment Reminder
-
-- Do not leave finished feature work only in a local commit when the intent is to ship it.
-- For changes meant to go live, push to the remote repository after verification so deployment can happen.
+Applied to Core Team cards (sorted descending) and the leaderboard.

@@ -1,0 +1,26 @@
+---
+import site from "@/data/site.json";
+---
+
+<header class="fixed top-0 z-50 w-full border-b border-white/5 bg-brand-950/80 backdrop-blur-md">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <a href="/" class="flex items-center gap-3">
+      <img src="/images/logo.svg" alt="GenAI Gurus" class="h-8" />
+    </a>
+
+    <nav class="hidden items-center gap-8 text-sm font-medium text-brand-200 md:flex">
+      <a href="#upcoming" class="transition hover:text-white">Next Event</a>
+      <a href="#talks" class="transition hover:text-white">Talks</a>
+      <a href="#team" class="transition hover:text-white">Team</a>
+      <a href="#about" class="transition hover:text-white">About</a>
+      <a
+        href={site.links.meetup}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="rounded-lg bg-accent-500 px-4 py-2 text-sm font-semibold text-brand-950 transition hover:bg-accent-400"
+      >
+        Join Meetup
+      </a>
+    </nav>
+  </div>
+</header>

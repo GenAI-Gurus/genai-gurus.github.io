@@ -1,0 +1,80 @@
+[
+  {
+    "title": "Building Production RAG Systems at Scale",
+    "date": "2025-11-20",
+    "image": "/images/talks/placeholder-1.jpg",
+    "summary": "Deep dive into retrieval-augmented generation architectures that handle millions of documents in production environments.",
+    "speaker_name": "Speaker Name",
+    "speaker_role": "Senior ML Engineer, Company",
+    "speaker_photo": "/images/speakers/placeholder.jpg",
+    "company_logo": "",
+    "meetup_participants": 85,
+    "youtube_views": 1200,
+    "youtube_url": "https://www.youtube.com/@GenAIGurus"
+  },
+  {
+    "title": "LLM Safety: Red-Teaming and Guardrails in Practice",
+    "date": "2025-10-15",
+    "image": "/images/talks/placeholder-2.jpg",
+    "summary": "How leading teams approach LLM safety with practical red-teaming methodologies and production guardrail patterns.",
+    "speaker_name": "Speaker Name",
+    "speaker_role": "AI Safety Lead, Company",
+    "speaker_photo": "/images/speakers/placeholder.jpg",
+    "company_logo": "",
+    "meetup_participants": 92,
+    "youtube_views": 1450,
+    "youtube_url": "https://www.youtube.com/@GenAIGurus"
+  },
+  {
+    "title": "From Prototype to Production: Lessons in GenAI Deployment",
+    "date": "2025-09-10",
+    "image": "/images/talks/placeholder-3.jpg",
+    "summary": "Real stories of shipping generative AI applications — what works, what breaks, and what nobody tells you about going to production.",
+    "speaker_name": "Speaker Name",
+    "speaker_role": "CTO, Company",
+    "speaker_photo": "/images/speakers/placeholder.jpg",
+    "company_logo": "",
+    "meetup_participants": 78,
+    "youtube_views": 980,
+    "youtube_url": "https://www.youtube.com/@GenAIGurus"
+  },
+  {
+    "title": "Multimodal AI: Vision-Language Models in Enterprise",
+    "date": "2025-07-25",
+    "image": "/images/talks/placeholder-4.jpg",
+    "summary": "How enterprises are leveraging vision-language models for document processing, quality inspection, and creative workflows.",
+    "speaker_name": "Speaker Name",
+    "speaker_role": "Research Scientist, Company",
+    "speaker_photo": "/images/speakers/placeholder.jpg",
+    "company_logo": "",
+    "meetup_participants": 71,
+    "youtube_views": 870,
+    "youtube_url": "https://www.youtube.com/@GenAIGurus"
+  },
+  {
+    "title": "AI Strategy for Technical Leaders",
+    "date": "2025-06-18",
+    "image": "/images/talks/placeholder-5.jpg",
+    "summary": "A framework for technical leaders to evaluate, prioritize, and execute AI initiatives without falling for hype cycles.",
+    "speaker_name": "Speaker Name",
+    "speaker_role": "VP Engineering, Company",
+    "speaker_photo": "/images/speakers/placeholder.jpg",
+    "company_logo": "",
+    "meetup_participants": 88,
+    "youtube_views": 1100,
+    "youtube_url": "https://www.youtube.com/@GenAIGurus"
+  },
+  {
+    "title": "Fine-Tuning Open Models: When and How",
+    "date": "2025-05-22",
+    "image": "/images/talks/placeholder-6.jpg",
+    "summary": "Practical guide to fine-tuning open-weight models — data preparation, training strategies, evaluation, and deployment.",
+    "speaker_name": "Speaker Name",
+    "speaker_role": "ML Engineer, Company",
+    "speaker_photo": "/images/speakers/placeholder.jpg",
+    "company_logo": "",
+    "meetup_participants": 65,
+    "youtube_views": 750,
+    "youtube_url": "https://www.youtube.com/@GenAIGurus"
+  }
+]

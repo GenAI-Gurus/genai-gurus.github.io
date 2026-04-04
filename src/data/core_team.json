@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Carlos Example",
+    "role": "Community Lead & Organizer",
+    "linkedin": "https://www.linkedin.com/in/placeholder/",
+    "photo": "/images/team/placeholder.jpg",
+    "member_since": "2023-06-01",
+    "hosted_events": 35,
+    "joined_events": 48
+  },
+  {
+    "name": "Team Member 2",
+    "role": "Co-Organizer & Speaker Curator",
+    "linkedin": "https://www.linkedin.com/in/placeholder/",
+    "photo": "/images/team/placeholder.jpg",
+    "member_since": "2023-08-15",
+    "hosted_events": 12,
+    "joined_events": 42
+  },
+  {
+    "name": "Team Member 3",
+    "role": "Technical Program Lead",
+    "linkedin": "https://www.linkedin.com/in/placeholder/",
+    "photo": "/images/team/placeholder.jpg",
+    "member_since": "2023-10-01",
+    "hosted_events": 8,
+    "joined_events": 38
+  },
+  {
+    "name": "Team Member 4",
+    "role": "Community Operations",
+    "linkedin": "https://www.linkedin.com/in/placeholder/",
+    "photo": "/images/team/placeholder.jpg",
+    "member_since": "2024-01-10",
+    "hosted_events": 5,
+    "joined_events": 30
+  }
+]

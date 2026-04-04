@@ -1,56 +1,41 @@
 # Cursor setup for GenAI Gurus
 
-Please prepare this repo for development in Cursor with a minimal Astro + Tailwind + GitHub Pages workflow.
+Status: **Setup complete.** All agent tasks below have been implemented.
 
-## Goals
+## What was set up
 
-1. Keep the setup minimal
-2. Make `.astro` development smooth
-3. Enable formatting, linting, and class sorting
-4. Add project rules so AI edits stay aligned with the site spec
-5. Do not introduce unnecessary frameworks, CMSs, databases, or server features
-
-## Agent tasks
-
-1. Detect whether this project already uses Astro and Tailwind
-2. If missing, install and configure:
-   1. `prettier`
-   2. `prettier-plugin-astro`
-   3. `prettier-plugin-tailwindcss`
-   4. `eslint`
-3. Create or update formatting config so `.astro`, `.ts`, `.js`, `.json`, `.md`, `.css` are formatted consistently
-4. Add npm scripts if missing:
-   1. `dev`
-   2. `build`
-   3. `preview`
-   4. `lint`
-   5. `format`
-5. Create `.cursor/rules` with short project rules covering:
-   1. no generic AI startup design
-   2. no pricing section
-   3. no testimonials
-   4. no clichéd AI visuals
-   5. preserve the GenAI Gurus information architecture
-   6. keep implementation static first and GitHub Pages compatible
-6. Add minimal repo docs explaining how to run, build, lint, and format
-7. Do not break existing project structure unless clearly necessary
+| Item | Status |
+| ---- | ------ |
+| Astro (v6) + Tailwind CSS v4 via `@tailwindcss/vite` | Installed |
+| `prettier` + `prettier-plugin-astro` + `prettier-plugin-tailwindcss` | Installed |
+| `eslint` + `eslint-plugin-astro` (flat config) | Installed |
+| `.prettierrc` formatting config for `.astro`, `.ts`, `.js`, `.json`, `.md`, `.css` | Created |
+| `eslint.config.js` (flat config) | Created |
+| npm scripts: `dev`, `build`, `preview`, `lint`, `format` | Added |
+| `.cursor/rules/project.mdc` with design and architecture guardrails | Created |
+| `.gitignore` for `node_modules/`, `dist/`, `.astro/` | Created |
+| `README.md` with run/build/lint/format instructions | Created |
+| `AGENTS.md` repo guide for AI-assisted development | Created |
 
 ## Manual steps for Carlos
 
-These likely need to be done manually in Cursor:
+These need to be done once in Cursor:
 
 1. Install editor extensions:
-   1. Astro
-   2. Tailwind CSS IntelliSense
-   3. ESLint
-   4. Prettier
-2. Enable format on save
-3. Set Prettier as default formatter where appropriate
-4. Sign in to any tools or services if prompted
+   1. [Astro](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode)
+   2. [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
+   3. [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+   4. [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+2. Enable **Format on Save** in settings
+3. Set **Prettier** as the default formatter for `.astro`, `.ts`, `.js`, `.json`, `.md`, `.css`
+4. Run `npm install` to get all dependencies
+5. Run `npm run dev` to start the local dev server at `localhost:4321`
 
-## Constraints
+## Tech stack summary
 
-1. Keep the result simple and maintainable
-2. Prefer editing existing files over introducing many new abstractions
-3. Ask for confirmation only if a destructive change is required
-4. Output a short summary of what was installed, configured, and what still needs manual action
+- **Framework**: Astro v6 (static output)
+- **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin
+- **Formatting**: Prettier with Astro and Tailwind plugins
+- **Linting**: ESLint with `eslint-plugin-astro` (flat config)
+- **Deployment**: GitHub Pages via `.github/workflows/deploy.yml`
+- **Data sync**: Monthly via `.github/workflows/sync-data.yml` running `scripts/sync_meetup_data.py`

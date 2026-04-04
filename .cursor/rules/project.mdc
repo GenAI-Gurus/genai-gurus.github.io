@@ -1,0 +1,33 @@
+---
+description: GenAI Gurus project rules for AI-assisted development
+globs: ["**/*"]
+---
+
+# GenAI Gurus — Project Rules
+
+## Technology
+- Astro + Tailwind CSS, static output, GitHub Pages compatible.
+- No server-side rendering, no databases, no CMS.
+
+## Design
+- Do NOT use generic AI startup aesthetics (neon, glowing brains, robot heads, circuit patterns).
+- Do NOT add pricing sections, testimonials, newsletter signups, or SaaS-style feature grids.
+- Do NOT use clichéd AI visuals or sci-fi/crypto aesthetics.
+- Keep the design editorial, clean, community-driven. Premium feel through typography, spacing, and curation — not visual noise.
+
+## Information Architecture
+- The landing page follows the section order defined in site-functional-spec.md:
+  Hero → Upcoming Event → Highlighted Talks → Core Team → Milestones → About → Speak & Partner → Footer.
+- The leaderboard lives at /leaderboard.
+- No other pages unless explicitly required.
+
+## Data
+- Manual content lives in src/data/ (JSON) and src/content/ (Markdown).
+- Generated data (stats, leaderboard, upcoming event) is written by GitHub Actions scripts.
+- Highlighted talks are always manually curated — never auto-selected.
+
+## Code Style
+- Use Astro components in src/components/.
+- Import data at build time in frontmatter.
+- Prefer semantic HTML elements.
+- Keep components focused — one section per component.
