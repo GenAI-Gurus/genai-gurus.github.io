@@ -407,9 +407,11 @@ def hydrate_events_from_links(
         if not normalized:
             continue
         parsed_for_link: list[dict[str, str]] = []
+        extracted_image = ""
         try:
             payload = fetch_url(normalized, headers=headers, timeout=20)
             parsed_for_link = parse_ld_json_events(payload)
+            extracted_image = extract_image_from_event_html(payload)
         except (urllib.error.URLError, RuntimeError, ValueError) as exc:
             debug(f"hydrate_events_from_links: failed to fetch {normalized}: {exc}")
 
@@ -425,6 +427,9 @@ def hydrate_events_from_links(
             chosen = fallback_events_by_url.get(normalized)
 
         if chosen is not None:
+            chosen = dict(chosen)
+            if extracted_image:
+                chosen["image"] = extracted_image
             hydrated.append(chosen)
 
     debug(f"hydrate_events_from_links: produced {len(hydrated)} events from {len(links)} links")

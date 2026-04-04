@@ -149,6 +149,54 @@ class SyncMeetupEventsTests(unittest.TestCase):
 
         self.assertEqual(updated[0]["image"], "https://images.meetupstatic.com/correct-image.jpg")
 
+    def test_hydrate_events_from_links_prefers_cover_image_from_event_html(self):
+        fallback_events = {
+            "https://www.meetup.com/genai-gurus/events/313946334": {
+                "title": "OpenClaw",
+                "date": "2026-04-15T17:00:00Z",
+                "event_status": "upcoming",
+                "speaker_name": "",
+                "location_label": "Online",
+                "meetup_url": "https://www.meetup.com/genai-gurus/events/313946334/",
+                "youtube_url": "",
+                "image": "https://secure-content.meetupstatic.com/images/classic-events/533436005/676x676.jpg",
+                "summary": "",
+            }
+        }
+
+        event_html = """
+        <meta property="og:image" content="https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg" />
+        <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "Event",
+            "name": "OpenClaw",
+            "startDate": "2026-04-15T19:00:00+02:00",
+            "url": "https://www.meetup.com/genai-gurus/events/313946334/",
+            "location": {"name": "Online"},
+            "description": "Speaker: Jane Doe",
+            "image": "https://secure-content.meetupstatic.com/images/classic-events/533436005/676x676.jpg"
+          }
+        </script>
+        """
+
+        original_fetch_url = mod.fetch_url
+        try:
+            mod.fetch_url = lambda *_args, **_kwargs: event_html
+            hydrated = mod.hydrate_events_from_links(
+                ["https://www.meetup.com/genai-gurus/events/313946334"],
+                headers={},
+                fallback_events_by_url=fallback_events,
+            )
+        finally:
+            mod.fetch_url = original_fetch_url
+
+        self.assertEqual(len(hydrated), 1)
+        self.assertEqual(
+            hydrated[0]["image"],
+            "https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
