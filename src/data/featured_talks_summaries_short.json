@@ -1,0 +1,83 @@
+[
+  {
+    "title": "OpenClaw - How It Works, Best Practices & Safety for Real-World Personal Agents",
+    "date": "2026-04-15",
+    "image": "",
+    "summary": "See how OpenClaw agents become useful and safe in practice.",
+    "speaker_name": "Maxim Vovshin",
+    "speaker_role": "Early contributor to OpenClaw, 10+ years Software engineer",
+    "speaker_photo": "",
+    "company_logo": "",
+    "meetup_participants": 102,
+    "youtube_views": null,
+    "youtube_url": "https://www.meetup.com/genai-gurus/events/313946334/"
+  },
+  {
+    "title": "Beyond Code Completion: Windsurf and Human+Agent Software Development",
+    "date": "2025-05-06",
+    "image": "",
+    "summary": "See why Windsurf pushes coding beyond simple autocomplete.",
+    "speaker_name": "Rudy Garza; Vanessa Salas",
+    "speaker_role": "GTM, Windsurf; Deployed Engineer, Windsurf",
+    "speaker_photo": "",
+    "company_logo": "",
+    "meetup_participants": 62,
+    "youtube_views": 190,
+    "youtube_url": "https://www.youtube.com/watch?v=L40yro0RH_k"
+  },
+  {
+  "title": "Societal Adaptation to Advanced AI: Beyond Capability-Modifying Interventions",
+  "date": "2024-07-29",
+  "image": "",
+  "summary": "Watch how society can adapt to advanced AI risks.",
+  "speaker_name": "Jamie Bernardi; Gabriel Mukobi",
+  "speaker_role": "AI governance fellow; US AI Safety Institute staff",
+  "speaker_photo": "",
+  "company_logo": "",
+  "meetup_participants": 30,
+  "youtube_views": null,
+  "youtube_url": ""
+},
+
+{
+  "title": "Privacy and GenAI – navigating the risks and unleashing the opportunities",
+  "date": "2024-06-27",
+  "image": "",
+  "summary": "See how privacy and GenAI can work together responsibly.",
+  "speaker_name": "Mark Webber; Natalie Farmer",
+  "speaker_role": "Managing Partner & Partner, Fieldfisher Silicon Valley",
+  "speaker_photo": "",
+  "company_logo": "",
+  "meetup_participants": 52,
+  "youtube_views": null,
+  "youtube_url": ""
+},
+
+{
+  "title": "Unlocking Llama 3: An Interactive Q&A with Meta's AI Expert Thomas Scialom",
+  "date": "2024-05-28",
+  "image": "https://i.ytimg.com/vi/M4ZzVePDWvI/maxresdefault.jpg",
+  "summary": "Q&A with Meta's AI expert behind Llama models.",
+  "speaker_name": "Thomas Scialom",
+  "speaker_role": "AGI Researcher, Llama 2 & 3 post-training lead at Meta",
+  "speaker_photo": "",
+  "company_logo": "",
+  "meetup_participants": 93,
+  "youtube_views": 141,
+  "youtube_url": "https://www.youtube.com/watch?v=M4ZzVePDWvI"
+},
+
+{
+  "title": "Stable Diffusion: Latent Generative Modeling for Efficient Visual Synthesis",
+  "date": "2023-10-10",
+  "image": "https://i.ytimg.com/vi/6d65X9-kR0g/maxresdefault.jpg",
+  "summary": "See why Stable Diffusion changed visual generative AI.",
+  "speaker_name": "Andreas Blattmann",
+  "speaker_role": "Research Scientist at Stability AI, LMU Munich PhD",
+  "speaker_photo": "",
+  "company_logo": "",
+  "meetup_participants": 69,
+  "youtube_views": 134,
+  "youtube_url": "https://www.youtube.com/watch?v=6d65X9-kR0g"
+}
+]
