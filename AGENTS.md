@@ -52,7 +52,7 @@ The product is a community landing page with a leaderboard subpage.
 ### Styling
 
 - `src/styles/global.css` — Tailwind v4 import, brand color tokens (`brand-*`, `accent-*`), font config.
-- Brand palette: dark navy backgrounds (`brand-950` to `brand-50`), amber/gold accents (`accent-500: #F6B141`).
+- Brand palette: dark navy backgrounds (`brand-950` to `brand-50`), teal accents (`accent-500: #14b8a6`).
 
 ### Config
 
@@ -72,6 +72,15 @@ The product is a community landing page with a leaderboard subpage.
 - **Theme colors, fonts** — `src/styles/global.css` `@theme` block.
 - **Meta tags, fonts** — `src/layouts/Base.astro` `<head>`.
 - **Meetup crawl logic** — `scripts/sync_meetup_data.py`.
+
+## Workflow
+
+After every feature or fix is implemented:
+
+1. Stage and commit the changes with a clear, descriptive commit message.
+2. Push to the remote immediately (`git push`).
+
+Never leave completed work sitting only in the local repo — always push so the deploy pipeline picks it up.
 
 ## Guardrails
 
