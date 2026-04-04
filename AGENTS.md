@@ -73,15 +73,6 @@ The product is a community landing page with a leaderboard subpage.
 - **Meta tags, fonts** — `src/layouts/Base.astro` `<head>`.
 - **Meetup crawl logic** — `scripts/sync_meetup_data.py`.
 
-## Workflow
-
-After every feature or fix is implemented:
-
-1. Stage and commit the changes with a clear, descriptive commit message.
-2. Push to the remote immediately (`git push`).
-
-Never leave completed work sitting only in the local repo — always push so the deploy pipeline picks it up.
-
 ## Guardrails
 
 - Do not hand-edit `upcoming_event.json`, `community_stats.json`, or `leaderboard.json` for routine updates — run the sync script or wait for the monthly Action.
