@@ -106,11 +106,11 @@ function formatDate(iso: string): string {
                     <p class="font-display text-xl font-bold text-accent-500">
                       {totalReach.toLocaleString()}
                     </p>
-                    <span class="text-xs font-normal text-brand-400">total reach</span>
+                    <span class="text-xs font-normal text-brand-400">total audience</span>
                   </div>
                   <div class="mt-1.5 flex gap-4 text-xs text-brand-400">
-                    <span>{talk.meetup_participants} attendees</span>
-                    {views > 0 && <span>{views.toLocaleString()} views</span>}
+                    <span>{talk.meetup_participants} live attendees</span>
+                    {views > 0 && <span>{views.toLocaleString()} replay views</span>}
                   </div>
                 </div>
               </div>

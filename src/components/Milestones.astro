@@ -26,7 +26,7 @@ import stats from "@/data/community_stats.json";
           const displayValue = isLive
             ? `${stats.meetup_members.toLocaleString()}+ members`
             : "total_reach" in m
-              ? `${(m.total_reach as number).toLocaleString()}+ total reach`
+              ? `${(m.total_reach as number).toLocaleString()}+ total audience`
               : "";
 
           return (
