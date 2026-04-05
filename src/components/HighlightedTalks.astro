@@ -92,12 +92,20 @@ function formatDate(iso: string): string {
                         />
                       )}
                     </div>
-                    <div class="min-w-0">
+                    <div class="min-w-0 flex-1">
                       <p class="truncate text-sm font-medium text-white">{talk.speaker_name}</p>
                       {talk.speaker_role && (
                         <p class="truncate text-xs text-brand-400">{talk.speaker_role}</p>
                       )}
                     </div>
+                    {talk.company_logo && (
+                      <img
+                        src={talk.company_logo}
+                        alt=""
+                        class="h-7 w-7 flex-shrink-0 rounded object-contain"
+                        loading="lazy"
+                      />
+                    )}
                   </div>
                 )}
 
