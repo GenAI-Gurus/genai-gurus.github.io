@@ -21,10 +21,15 @@
     "total_reach": 5000
   },
   {
+    "date": "April 2026",
+    "label": "Passed 2,000 Meetup members",
+    "description": "The community crossed the 2,000-member milestone on Meetup."
+  },
+  {
     "date": "Today",
     "label": "Community keeps growing",
-    "description": "Over 1,500 members and counting.",
-    "member_count": 1500,
+    "description": "Over 2,000 members and counting.",
+    "member_count": 2000,
     "is_live": true
   }
 ]

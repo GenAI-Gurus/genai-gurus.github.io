@@ -12,6 +12,6 @@ We host expert sessions and community conversations focused on real-world GenAI 
 
 ## Origin
 
-GenAI Gurus started in June 2023 as a small Meetup group for people who wanted to go deeper than surface-level AI hype. Since then, the community has grown to over 1,500 members and 50+ events, attracting speakers from leading companies and research institutions.
+GenAI Gurus started in June 2023 as a small Meetup group for people who wanted to go deeper than surface-level AI hype. Since then, the community has grown to over 2,000 members and 50+ events, attracting speakers from leading companies and research institutions.
 
 We believe the strongest AI communities are built on honest technical exchange, visible contribution, and a shared commitment to building AI that works responsibly.
