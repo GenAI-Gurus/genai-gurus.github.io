@@ -1,0 +1,197 @@
+---
+import Base from "@/layouts/Base.astro";
+
+const highlights = [
+  {
+    number: "01",
+    title: "Official EU Sources",
+    description:
+      "The full regulation text, EUR-Lex summaries, EU AI Office guidance, and official implementation timelines.",
+  },
+  {
+    number: "02",
+    title: "Compliance Tools",
+    description:
+      "Platforms and services for risk classification, audit trails, conformity assessments, and regulatory mapping.",
+  },
+  {
+    number: "03",
+    title: "Open Source Projects",
+    description:
+      "Libraries, toolkits, and frameworks for bias detection, explainability, robustness testing, and governance automation.",
+  },
+  {
+    number: "04",
+    title: "Templates and Checklists",
+    description:
+      "Ready-to-use FRIA templates, Annex IV technical documentation, quality management system checklists, and conformity declarations.",
+  },
+  {
+    number: "05",
+    title: "Newsletters and Updates",
+    description:
+      "The best newsletters, blogs, and community channels tracking EU AI Act enforcement, guidance, and national implementations.",
+  },
+];
+---
+
+<Base
+  title="Awesome EU AI Act — GenAI Gurus"
+  description="A curated resource hub for EU AI Act compliance: official sources, open source tools, templates, standards, and practical guides."
+>
+  <section class="relative overflow-hidden pt-32 pb-20 md:pt-44 md:pb-28">
+    <!-- Ambient glow -->
+    <div class="pointer-events-none absolute inset-0">
+      <div
+        class="absolute top-20 left-1/4 h-96 w-96 rounded-full bg-accent-500/8 blur-3xl animate-glow-pulse"
+      >
+      </div>
+      <div
+        class="absolute top-40 right-1/4 h-72 w-72 rounded-full bg-accent-400/5 blur-3xl animate-glow-pulse"
+        style="animation-delay: 2s;"
+      >
+      </div>
+    </div>
+
+    <!-- Subtle grid -->
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.03]"
+      style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;"
+    >
+    </div>
+
+    <div class="relative mx-auto max-w-4xl px-6 text-center">
+      <!-- Badge -->
+      <div
+        class="animate-fade-in mb-8 inline-flex items-center gap-2 rounded-full border border-accent-500/20 bg-accent-500/5 px-4 py-1.5 text-sm font-medium text-accent-400"
+      >
+        <span class="relative flex h-2 w-2">
+          <span
+            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-400 opacity-75"
+          ></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-accent-500"
+          ></span>
+        </span>
+        August 2026 enforcement deadline
+      </div>
+
+      <h1
+        class="animate-fade-in-up font-display text-4xl leading-tight font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl md:leading-tight"
+      >
+        Awesome EU AI Act
+      </h1>
+
+      <p
+        class="animate-fade-in-up mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-brand-200 md:text-xl"
+        style="animation-delay: 0.15s;"
+      >
+        A curated resource hub for EU AI Act compliance: official sources,
+        open source tools, templates, standards, and practical guides.
+      </p>
+
+      <div
+        class="animate-fade-in-up mt-10"
+        style="animation-delay: 0.3s;"
+      >
+        <a
+          href="https://github.com/GenAI-Gurus/awesome-eu-ai-act#readme"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center gap-2.5 rounded-xl bg-accent-500 px-8 py-4 text-base font-semibold text-brand-950 shadow-lg shadow-accent-500/25 transition-all hover:bg-accent-400 hover:shadow-accent-500/40 hover:-translate-y-0.5"
+        >
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"
+            ></path>
+          </svg>
+          Open the GitHub repository
+          <svg
+            class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Highlights -->
+  <section class="pb-28">
+    <div class="mx-auto max-w-5xl px-6">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          highlights.map((item, i) => (
+            <a
+              href={`https://github.com/GenAI-Gurus/awesome-eu-ai-act#readme`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group relative rounded-2xl border border-brand-700/50 bg-brand-800/20 p-6 backdrop-blur-sm transition-all hover:border-accent-500/30 hover:bg-brand-800/40 hover:-translate-y-0.5"
+              style={`animation-delay: ${i * 0.08}s;`}
+            >
+              <div class="mb-4 font-display text-sm font-bold text-accent-500">
+                {item.number}
+              </div>
+              <h3 class="mb-2 font-display text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">
+                {item.title}
+              </h3>
+              <p class="text-sm leading-relaxed text-brand-300">
+                {item.description}
+              </p>
+            </a>
+          ))
+        }
+
+        <!-- Sixth card: CTA -->
+        <a
+          href="https://github.com/GenAI-Gurus/awesome-eu-ai-act#readme"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group relative flex flex-col items-center justify-center rounded-2xl border border-accent-500/30 bg-accent-500/5 p-6 text-center backdrop-blur-sm transition-all hover:border-accent-500/60 hover:bg-accent-500/10 hover:-translate-y-0.5"
+        >
+          <div class="mb-3 text-3xl font-bold text-accent-400">200+</div>
+          <p class="font-display text-lg font-semibold text-white">
+            Curated resources
+          </p>
+          <p class="mt-2 text-sm text-brand-300">
+            And growing. Contributions welcome.
+          </p>
+          <span
+            class="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent-400 group-hover:text-accent-300"
+          >
+            View the full list
+            <svg
+              class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+
+      <!-- Maintained by -->
+      <p class="mt-12 text-center text-sm text-brand-400">
+        Maintained by <a
+          href="https://www.linkedin.com/in/carloshvp"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-brand-200 underline decoration-brand-600 underline-offset-2 hover:text-white hover:decoration-accent-500 transition-colors"
+          >Carlos Hernandez</a
+        >, Founder of GenAI Gurus. Licensed CC0.
+      </p>
+    </div>
+  </section>
+</Base>
