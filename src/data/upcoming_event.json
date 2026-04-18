@@ -1,10 +1,10 @@
 {
-  "title": "OpenClaw — How It Works, Best Practices & Safety for Real-World Personal Agents",
-  "date": "2026-04-15T17:00:00Z",
-  "image": "https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg",
-  "summary": "In this talk we'll go over the main building blocks behind personal agents like OpenClaw and how they fit together in practice. From there, we'll look at best practices for safety and reliability.",
-  "speaker_name": "",
-  "speaker_role": "",
-  "meetup_url": "https://www.meetup.com/genai-gurus/events/313946334/",
-  "rsvp_count": 500
+  "title": "Building Governed AI Agents: Microsoft Agent Governance Toolkit",
+  "date": "2026-05-07T17:00:00Z",
+  "image": "",
+  "summary": "Explore how Microsoft's Agent Governance Toolkit helps teams build AI agents with governance built in from the start. Imran Siddique will cover the toolkit's practical ideas, how it supports safer and more scalable agent adoption, and its relevance to the EU AI Act for agent-based systems.",
+  "speaker_name": "Imran Siddique",
+  "speaker_role": "Principal Engineering Leader at Microsoft",
+  "meetup_url": "https://www.meetup.com/de-de/genai-gurus/events/314292020/",
+  "rsvp_count": 0
 }
