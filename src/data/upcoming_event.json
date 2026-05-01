@@ -1,10 +1,9 @@
 {
   "title": "Building Governed AI Agents: Microsoft Agent Governance Toolkit",
-  "date": "2026-05-07T17:00:00Z",
-  "image": "/images/MS_AGT_Event.png",
-  "summary": "Explore how Microsoft's Agent Governance Toolkit helps teams build AI agents with governance built in from the start. Imran Siddique will cover the toolkit's practical ideas, how it supports safer and more scalable agent adoption, and its relevance to the EU AI Act for agent-based systems.",
-  "speaker_name": "Imran Siddique",
-  "speaker_role": "Principal Engineering Leader at Microsoft",
-  "meetup_url": "https://www.meetup.com/de-de/genai-gurus/events/314292020/",
-  "rsvp_count": 0
+  "date": "2026-05-07T19:00:00Z",
+  "image": "https://secure.meetupstatic.com/photos/event/4/1/e/2/600_533716866.jpeg",
+  "summary": "GenAI Gurus - Generative Artificial Intelligence This session explores how Microsoft Agent Governance Toolkit helps teams build AI agents with governance built in from the start. Imran Siddique will share the practical ideas behind the toolkit, how it supports safer and more scal",
+  "speaker_name": "",
+  "speaker_role": "",
+  "meetup_url": "https://www.meetup.com/genai-gurus/events/314292020/"
 }

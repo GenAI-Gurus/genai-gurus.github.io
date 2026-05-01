@@ -1,6 +1,22 @@
 [
-  { "rank": 1, "name": "Carlos Hernandez", "score": 223 },
-  { "rank": 2, "name": "Gerd Prüßmann", "score": 102 },
-  { "rank": 3, "name": "Rashmi Kamath", "score": 78 },
-  { "rank": 4, "name": "Miguel Cienfuegos", "score": 55 }
+  {
+    "rank": 1,
+    "name": "Carlos Hernandez",
+    "score": 223
+  },
+  {
+    "rank": 2,
+    "name": "Gerd Prüßmann",
+    "score": 102
+  },
+  {
+    "rank": 3,
+    "name": "Rashmi Kamath",
+    "score": 78
+  },
+  {
+    "rank": 4,
+    "name": "Miguel Cienfuegos",
+    "score": 55
+  }
 ]
