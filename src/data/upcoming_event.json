@@ -1,9 +1,10 @@
 {
-  "title": "Building Governed AI Agents: Microsoft Agent Governance Toolkit",
-  "date": "2026-05-07T19:00:00Z",
-  "image": "https://secure.meetupstatic.com/photos/event/4/1/e/2/600_533716866.jpeg",
-  "summary": "GenAI Gurus - Generative Artificial Intelligence This session explores how Microsoft Agent Governance Toolkit helps teams build AI agents with governance built in from the start. Imran Siddique will share the practical ideas behind the toolkit, how it supports safer and more scal",
-  "speaker_name": "",
-  "speaker_role": "",
-  "meetup_url": "https://www.meetup.com/genai-gurus/events/314292020/"
+  "title": "When Claude Code Goes Rogue: Real Time Monitoring by Apollo Research",
+  "date": "2026-06-18T17:00:00Z",
+  "image": "/images/claude-code-goes-rogue-apollo-research.png",
+  "summary": "GenAI Gurus - Generative Artificial Intelligence Coding agents are quickly becoming part of day-to-day engineering work, but most people still lack visibility into what these agents are actually doing. Marius will share findings from Apollo’s research into tens of thousands of re",
+  "speaker_name": "Marius Hobbhahn",
+  "speaker_role": "CEO & Founder, Apollo Research",
+  "meetup_url": "https://www.meetup.com/genai-gurus/events/314881167/",
+  "display_date": "Thursday, June 18, 2026 at 7:00 PM CEST"
 }
