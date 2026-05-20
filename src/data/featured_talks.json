@@ -1,5 +1,18 @@
 [
   {
+    "title": "Building Governed AI Agents: Microsoft Agent Governance Toolkit",
+    "date": "2026-05-07",
+    "image": "https://i.ytimg.com/vi/uDQBqp9Om5s/maxresdefault.jpg",
+    "summary": "Explore how Microsoft's Agent Governance Toolkit supports safer enterprise AI agents.",
+    "speaker_name": "Imran Siddique",
+    "speaker_role": "Microsoft, Principal Engineering Leader",
+    "speaker_photo": "",
+    "company_logo": "",
+    "meetup_participants": 112,
+    "youtube_views": 101,
+    "youtube_url": "https://youtu.be/uDQBqp9Om5s"
+  },
+  {
     "title": "OpenClaw - How It Works, Best Practices & Safety for Real-World Personal Agents",
     "date": "2026-04-15",
     "image": "https://secure.meetupstatic.com/photos/event/8/c/a/5/600_533436005.jpeg",
@@ -36,19 +49,6 @@
     "company_logo": "",
     "meetup_participants": 30,
     "youtube_views": 245,
-    "youtube_url": ""
-  },
-  {
-    "title": "Privacy and GenAI – navigating the risks and unleashing the opportunities",
-    "date": "2024-06-27",
-    "image": "/images/highres_521374511.avif",
-    "summary": "See how privacy and GenAI can work together responsibly.",
-    "speaker_name": "Mark Webber; Natalie Farmer",
-    "speaker_role": "Fieldfisher, Managing Partner",
-    "speaker_photo": "/images/1619484288167.jpg",
-    "company_logo": "",
-    "meetup_participants": 52,
-    "youtube_views": 412,
     "youtube_url": ""
   },
   {
