@@ -21,9 +21,11 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 from urllib.parse import urljoin
+from zoneinfo import ZoneInfo
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = REPO_ROOT / "src" / "data"
+MEETUP_TIMEZONE = ZoneInfo("Europe/Berlin")
 
 DEFAULT_ICAL_URL = "https://www.meetup.com/genai-gurus/events/ical/"
 DEFAULT_EVENTS_URL = "https://www.meetup.com/genai-gurus/events/"
@@ -75,7 +77,9 @@ def parse_dt(value: str) -> dt.datetime | None:
     if value.endswith("Z"):
         return dt.datetime.strptime(value, "%Y%m%dT%H%M%SZ").replace(tzinfo=dt.timezone.utc)
     if "T" in value:
-        return dt.datetime.strptime(value, "%Y%m%dT%H%M%S").replace(tzinfo=dt.timezone.utc)
+        return dt.datetime.strptime(value, "%Y%m%dT%H%M%S").replace(tzinfo=MEETUP_TIMEZONE).astimezone(
+            dt.timezone.utc
+        )
     return dt.datetime.strptime(value, "%Y%m%d").replace(tzinfo=dt.timezone.utc)
 
 
@@ -296,12 +300,48 @@ def write_json(path: Path, data: object) -> bool:
     return True
 
 
+def normalize_event_url(url: str) -> str:
+    return (url or "").strip().split("?", 1)[0].rstrip("/")
+
+
+def preserve_upcoming_event_overrides(event: dict) -> dict:
+    path = DATA_DIR / "upcoming_event.json"
+    if not path.exists():
+        return event
+
+    try:
+        existing = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return event
+
+    if not isinstance(existing, dict):
+        return event
+    if normalize_event_url(existing.get("meetup_url", "")) != normalize_event_url(event.get("meetup_url", "")):
+        return event
+
+    preserved = dict(event)
+    for field in ("display_date", "speaker_role"):
+        existing_value = str(existing.get(field, "")).strip()
+        if existing_value:
+            preserved[field] = existing_value
+
+    existing_speaker = str(existing.get("speaker_name", "")).strip()
+    if existing_speaker and not str(preserved.get("speaker_name", "")).strip():
+        preserved["speaker_name"] = existing_speaker
+
+    existing_image = str(existing.get("image", "")).strip()
+    if existing_image.startswith("/"):
+        preserved["image"] = existing_image
+
+    return preserved
+
+
 def derive_upcoming_event(events: list[dict]) -> dict | None:
     upcoming = [e for e in events if e.get("is_upcoming")]
     if not upcoming:
         return None
     ev = upcoming[0]
-    return {
+    return preserve_upcoming_event_overrides({
         "title": ev["title"],
         "date": ev["date"],
         "image": ev.get("image", ""),
@@ -309,7 +349,7 @@ def derive_upcoming_event(events: list[dict]) -> dict | None:
         "speaker_name": ev.get("speaker_name", ""),
         "speaker_role": "",
         "meetup_url": ev["meetup_url"],
-    }
+    })
 
 
 def derive_community_stats(events: list[dict]) -> dict:
