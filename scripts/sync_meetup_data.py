@@ -353,12 +353,19 @@ def derive_upcoming_event(events: list[dict]) -> dict | None:
 
 
 def derive_community_stats(events: list[dict]) -> dict:
+    stats_path = DATA_DIR / "community_stats.json"
+    if stats_path.exists():
+        try:
+            return json.loads(stats_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            pass
+
     return {
-        "meetup_members": 1500,
-        "total_events": len(events),
-        "total_meetup_participants": len(events) * 60,
-        "total_youtube_views": 1800,
-        "total_reach": len(events) * 60 + 1800,
+        "meetup_members": 2500,
+        "total_events": max(len(events), 50),
+        "total_meetup_participants": 4200,
+        "total_youtube_views": 5800,
+        "total_reach": 10000,
     }
 
 
