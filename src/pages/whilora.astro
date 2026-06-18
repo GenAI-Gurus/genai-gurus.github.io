@@ -1,0 +1,287 @@
+---
+import Base from "@/layouts/Base.astro";
+import site from "@/data/site.json";
+
+const flow = [
+  {
+    step: "01",
+    title: "Use the live attention window",
+    description:
+      "Whilora starts from a simple truth: the human may have ten minutes now and two hours away after that. The agent should behave differently in each window.",
+  },
+  {
+    step: "02",
+    title: "Frontload decisions",
+    description:
+      "When the human is present, the agent should ask the questions that unlock progress, surface risky assumptions, and agree on what autonomy is allowed.",
+  },
+  {
+    step: "03",
+    title: "Work while the human is away",
+    description:
+      "When the human leaves, the agent should keep moving on reversible work, run checks, save checkpoints, and queue non-blocking questions for later.",
+  },
+  {
+    step: "04",
+    title: "Recover after limits",
+    description:
+      "If quota or context interrupts the run, the session should checkpoint, wait for the reset or approved fallback, and resume from the next useful action.",
+  },
+];
+
+const principles = [
+  {
+    title: "Attention-aware",
+    description:
+      "Agents should know whether the human is available, leaving soon, away, or returning.",
+  },
+  {
+    title: "Autonomy with boundaries",
+    description:
+      "The agent can decide reversible details while preserving explicit approval for destructive or high-risk changes.",
+  },
+  {
+    title: "Quota-conscious",
+    description:
+      "Model limits, reset windows, and cost should shape strategy instead of surprising the user halfway through work.",
+  },
+  {
+    title: "Return-ready",
+    description:
+      "When the human comes back, the agent should offer a concise handoff: what changed, what was assumed, what passed, and what needs a decision.",
+  },
+];
+---
+
+<Base
+  title="Whilora — Availability-aware coding agents"
+  description="Whilora is a GenAI Gurus concept for making coding agents aware of human availability, autonomy boundaries, quota limits, and return handoffs."
+>
+  <section class="relative isolate overflow-hidden pt-32 pb-20 md:pt-44 md:pb-28">
+    <div class="pointer-events-none absolute inset-0">
+      <div
+        class="bg-accent-500/10 animate-glow-pulse absolute top-16 left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full blur-3xl"
+      >
+      </div>
+      <div
+        class="bg-brand-400/10 animate-glow-pulse absolute right-0 bottom-0 h-80 w-80 rounded-full blur-3xl"
+        style="animation-delay: 1.8s;"
+      >
+      </div>
+    </div>
+
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.04]"
+      style="background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.45) 1px, transparent 0); background-size: 36px 36px;"
+    >
+    </div>
+
+    <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-[1fr_0.92fr]">
+      <div>
+        <div
+          class="animate-fade-in border-accent-500/20 bg-accent-500/5 text-accent-400 mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium"
+        >
+          <span class="bg-accent-500 h-2 w-2 rounded-full"></span>
+          A GenAI Gurus concept
+        </div>
+
+        <h1
+          class="animate-fade-in-up font-display text-4xl leading-tight font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl md:leading-tight"
+        >
+          Coding agents need a sense of human time.
+        </h1>
+
+        <p
+          class="animate-fade-in-up text-brand-200 mt-6 max-w-2xl text-lg leading-relaxed md:text-xl"
+          style="animation-delay: 0.15s;"
+        >
+          Whilora is an availability-aware strategy layer for coding agents. It helps them ask
+          better questions while you are present, continue safely while you are away, and return
+          with a clear handoff instead of a pile of half-finished context.
+        </p>
+
+        <div
+          class="animate-fade-in-up mt-10 flex flex-col gap-3 sm:flex-row"
+          style="animation-delay: 0.3s;"
+        >
+          <a
+            href="#concept"
+            class="bg-accent-500 text-brand-950 shadow-accent-500/25 hover:bg-accent-400 hover:shadow-accent-500/40 inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold shadow-lg transition hover:-translate-y-0.5"
+          >
+            Explore the concept
+          </a>
+          <a
+            href={site.links.meetup}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="border-brand-600 text-brand-100 hover:border-accent-500/50 inline-flex items-center justify-center rounded-xl border px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-white/5 hover:text-white"
+          >
+            Join the community
+          </a>
+        </div>
+      </div>
+
+      <div class="relative">
+        <div class="bg-accent-500/10 absolute inset-0 rounded-[2rem] blur-2xl"></div>
+        <div
+          class="border-brand-700/70 bg-brand-900/70 relative overflow-hidden rounded-[1.5rem] border p-5 shadow-2xl shadow-black/30 backdrop-blur"
+        >
+          <div class="border-brand-700/60 mb-5 flex items-center justify-between border-b pb-4">
+            <div>
+              <p class="text-accent-400 text-xs font-semibold tracking-widest uppercase">
+                Session rhythm
+              </p>
+              <p class="text-brand-300 mt-1 text-sm">Human attention becomes agent strategy.</p>
+            </div>
+            <div
+              class="border-accent-500/25 bg-accent-500/10 text-accent-300 rounded-full border px-3 py-1 text-xs font-semibold"
+            >
+              Auto-resume
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="border-accent-500/25 bg-accent-500/10 rounded-2xl border p-4">
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-sm font-semibold text-white">Available now</span>
+                <span class="text-accent-300 text-sm">18 minutes</span>
+              </div>
+              <div class="bg-brand-800 mt-3 h-2 overflow-hidden rounded-full">
+                <div class="bg-accent-500 h-full w-[28%] rounded-full"></div>
+              </div>
+              <p class="text-brand-300 mt-3 text-sm leading-relaxed">
+                Ask blocker questions, confirm autonomy, define stop conditions.
+              </p>
+            </div>
+
+            <div class="border-brand-700/70 bg-brand-800/35 rounded-2xl border p-4">
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-sm font-semibold text-white">Away window</span>
+                <span class="text-brand-300 text-sm">3 hours</span>
+              </div>
+              <div class="mt-3 grid grid-cols-3 gap-2">
+                <div class="bg-accent-500/80 h-2 rounded-full"></div>
+                <div class="bg-accent-500/45 h-2 rounded-full"></div>
+                <div class="bg-brand-600 h-2 rounded-full"></div>
+              </div>
+              <p class="text-brand-300 mt-3 text-sm leading-relaxed">
+                Work independently, checkpoint progress, queue questions for return.
+              </p>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="border-brand-700/70 bg-brand-800/25 rounded-2xl border p-4">
+                <p class="text-brand-400 text-xs font-semibold tracking-widest uppercase">
+                  Quota event
+                </p>
+                <p class="mt-2 text-sm font-semibold text-white">Checkpoint, wait, resume</p>
+              </div>
+              <div class="border-brand-700/70 bg-brand-800/25 rounded-2xl border p-4">
+                <p class="text-brand-400 text-xs font-semibold tracking-widest uppercase">
+                  Return digest
+                </p>
+                <p class="mt-2 text-sm font-semibold text-white">Done, tested, assumed, next</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="concept" class="bg-brand-900 relative py-20 md:py-28">
+    <div
+      class="from-brand-950/30 to-brand-950/40 pointer-events-none absolute inset-0 bg-gradient-to-b via-transparent"
+    >
+    </div>
+
+    <div class="relative mx-auto max-w-6xl px-6">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class="text-accent-500 text-sm font-semibold tracking-widest uppercase">The concept</p>
+        <h2 class="font-display mt-3 text-3xl font-bold tracking-tight text-white md:text-4xl">
+          Turn availability into an operating contract.
+        </h2>
+        <p class="text-brand-200 mt-5 text-lg leading-relaxed">
+          Today, coding agents often ask at the wrong time, pause for avoidable clarification, or
+          lose momentum when quota resets. Whilora imagines a thin coordination layer that converts
+          time, attention, quota, and risk into instructions the agent can actually follow.
+        </p>
+      </div>
+
+      <div class="mt-14 grid gap-4 md:grid-cols-2">
+        {
+          flow.map((item) => (
+            <div class="border-brand-700/50 from-brand-800/45 to-brand-800/20 hover:border-accent-500/25 rounded-2xl border bg-gradient-to-b p-6 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20">
+              <div class="font-display text-accent-500 mb-4 text-sm font-bold">{item.step}</div>
+              <h3 class="font-display text-xl font-semibold text-white">{item.title}</h3>
+              <p class="text-brand-300 mt-3 text-sm leading-relaxed">{item.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 md:py-28">
+    <div class="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[0.78fr_1fr]">
+      <div>
+        <p class="text-accent-500 text-sm font-semibold tracking-widest uppercase">
+          Why it matters
+        </p>
+        <h2 class="font-display mt-3 text-3xl font-bold tracking-tight text-white md:text-4xl">
+          Better collaboration is not just a stronger model.
+        </h2>
+        <p class="text-brand-200 mt-5 text-lg leading-relaxed">
+          The most capable agent still needs to know when to ask, when to act, how much risk is
+          allowed, and what to do when a quota window closes. Whilora focuses on that missing layer:
+          the rhythm between human judgment and autonomous execution.
+        </p>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        {
+          principles.map((item) => (
+            <div class="border-brand-700/50 bg-brand-800/25 rounded-2xl border p-6">
+              <h3 class="font-display text-lg font-semibold text-white">{item.title}</h3>
+              <p class="text-brand-300 mt-2 text-sm leading-relaxed">{item.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-brand-900 relative overflow-hidden py-20 md:py-28">
+    <div
+      class="via-accent-500/25 pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent"
+    >
+    </div>
+
+    <div class="mx-auto max-w-4xl px-6 text-center">
+      <p class="text-accent-500 text-sm font-semibold tracking-widest uppercase">
+        Human-agent work
+      </p>
+      <h2 class="font-display mt-3 text-3xl font-bold tracking-tight text-white md:text-4xl">
+        A calmer way to run autonomous coding sessions.
+      </h2>
+      <p class="text-brand-200 mx-auto mt-5 max-w-2xl text-lg leading-relaxed">
+        Whilora points toward agents that respect limited human attention, preserve context across
+        interruptions, and return with exactly the summary needed to make the next decision.
+      </p>
+      <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+        <a
+          href="/"
+          class="border-brand-600 text-brand-100 hover:border-accent-500/50 inline-flex items-center justify-center rounded-xl border px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-white/5 hover:text-white"
+        >
+          Back to GenAI Gurus
+        </a>
+        <a
+          href={`mailto:${site.links.email}?subject=Whilora`}
+          class="bg-accent-500 text-brand-950 shadow-accent-500/25 hover:bg-accent-400 hover:shadow-accent-500/40 inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold shadow-lg transition hover:-translate-y-0.5"
+        >
+          Discuss Whilora
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
