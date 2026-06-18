@@ -29,6 +29,44 @@ const flow = [
   },
 ];
 
+const signals = [
+  {
+    label: "Availability",
+    value: "18m now, away 3h",
+  },
+  {
+    label: "Autonomy",
+    value: "Moderate, reversible work",
+  },
+  {
+    label: "Quota",
+    value: "Balanced spend, reset aware",
+  },
+  {
+    label: "Risk",
+    value: "Ask before destructive moves",
+  },
+];
+
+const modes = [
+  {
+    name: "Pairing",
+    description: "Ask concise blocker questions.",
+  },
+  {
+    name: "Pre-departure",
+    description: "Lock decisions and stop conditions.",
+  },
+  {
+    name: "Autonomous",
+    description: "Work, test, checkpoint, queue questions.",
+  },
+  {
+    name: "Return",
+    description: "Summarize changes, assumptions, and next action.",
+  },
+];
+
 const principles = [
   {
     title: "Attention-aware",
@@ -206,6 +244,165 @@ const principles = [
           lose momentum when quota resets. Whilora imagines a thin coordination layer that converts
           time, attention, quota, and risk into instructions the agent can actually follow.
         </p>
+      </div>
+
+      <div
+        class="border-brand-700/70 bg-brand-950/55 mt-14 overflow-hidden rounded-[1.75rem] border shadow-2xl shadow-black/20"
+        aria-label="Whilora operating loop diagram"
+      >
+        <div class="grid lg:grid-cols-[0.92fr_1.12fr_0.96fr]">
+          <div class="border-brand-700/60 border-b p-5 md:p-6 lg:border-r lg:border-b-0">
+            <p class="text-accent-400 text-xs font-semibold tracking-widest uppercase">
+              Input signals
+            </p>
+            <h3 class="font-display mt-2 text-xl font-semibold text-white">
+              What Whilora understands
+            </h3>
+            <div class="mt-5 space-y-3">
+              {
+                signals.map((signal) => (
+                  <div class="border-brand-700/60 bg-brand-800/35 rounded-2xl border p-4">
+                    <p class="text-brand-400 text-xs font-semibold tracking-widest uppercase">
+                      {signal.label}
+                    </p>
+                    <p class="mt-1 text-sm font-semibold text-white">{signal.value}</p>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+
+          <div class="border-brand-700/60 border-b p-5 md:p-7 lg:border-r lg:border-b-0">
+            <p class="text-accent-400 text-xs font-semibold tracking-widest uppercase">
+              Whilora layer
+            </p>
+            <h3 class="font-display mt-2 text-xl font-semibold text-white">
+              Convert context into agent strategy
+            </h3>
+
+            <div
+              class="border-accent-500/30 from-accent-500/15 to-brand-800/45 mt-5 rounded-[1.35rem] border bg-gradient-to-br p-5"
+            >
+              <p class="text-sm font-semibold text-white">Strategy engine</p>
+              <div class="mt-4 grid grid-cols-2 gap-2">
+                <span
+                  class="border-accent-500/20 bg-brand-950/35 text-accent-200 rounded-full border px-3 py-2 text-center text-xs font-semibold"
+                >
+                  Attention detector
+                </span>
+                <span
+                  class="border-accent-500/20 bg-brand-950/35 text-accent-200 rounded-full border px-3 py-2 text-center text-xs font-semibold"
+                >
+                  Mode chooser
+                </span>
+                <span
+                  class="border-accent-500/20 bg-brand-950/35 text-accent-200 rounded-full border px-3 py-2 text-center text-xs font-semibold"
+                >
+                  Quota manager
+                </span>
+                <span
+                  class="border-accent-500/20 bg-brand-950/35 text-accent-200 rounded-full border px-3 py-2 text-center text-xs font-semibold"
+                >
+                  Habit learner
+                </span>
+              </div>
+            </div>
+
+            <div class="from-accent-500 to-brand-700 mx-auto my-4 h-10 w-px bg-gradient-to-b"></div>
+
+            <div class="border-brand-700/70 bg-brand-800/35 rounded-[1.35rem] border p-5">
+              <p class="text-sm font-semibold text-white">Agent operating contract</p>
+              <div class="mt-4 grid gap-2 sm:grid-cols-2">
+                <p class="bg-brand-950/35 text-brand-200 rounded-xl px-3 py-2 text-xs">
+                  When to ask
+                </p>
+                <p class="bg-brand-950/35 text-brand-200 rounded-xl px-3 py-2 text-xs">
+                  What can proceed
+                </p>
+                <p class="bg-brand-950/35 text-brand-200 rounded-xl px-3 py-2 text-xs">
+                  When to checkpoint
+                </p>
+                <p class="bg-brand-950/35 text-brand-200 rounded-xl px-3 py-2 text-xs">
+                  How to resume
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 md:p-6">
+            <p class="text-accent-400 text-xs font-semibold tracking-widest uppercase">
+              Agent behavior
+            </p>
+            <h3 class="font-display mt-2 text-xl font-semibold text-white">
+              Four modes across the session
+            </h3>
+            <ol class="mt-5 space-y-3">
+              {
+                modes.map((mode, index) => (
+                  <li class="border-brand-700/60 bg-brand-800/30 rounded-2xl border p-4">
+                    <div class="flex items-start gap-3">
+                      <span class="bg-accent-500/15 text-accent-300 mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+                        {index + 1}
+                      </span>
+                      <div>
+                        <p class="text-sm font-semibold text-white">{mode.name}</p>
+                        <p class="text-brand-300 mt-1 text-sm leading-relaxed">
+                          {mode.description}
+                        </p>
+                      </div>
+                    </div>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </div>
+
+        <div class="border-brand-700/60 border-t p-5 md:p-6">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="text-accent-400 text-xs font-semibold tracking-widest uppercase">
+                Session loop
+              </p>
+              <h3 class="font-display mt-2 text-xl font-semibold text-white">
+                Present time becomes autonomous momentum.
+              </h3>
+            </div>
+            <p class="text-brand-300 max-w-xl text-sm leading-relaxed">
+              Whilora frontloads decisions while the human is present, preserves progress during
+              interruptions, and returns with the smallest useful handoff.
+            </p>
+          </div>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-[1.05fr_0.9fr_1.35fr_0.95fr]">
+            <div class="border-accent-500/25 bg-accent-500/10 rounded-2xl border p-4">
+              <p class="text-accent-300 text-xs font-semibold tracking-widest uppercase">
+                Human present
+              </p>
+              <p class="mt-2 text-sm font-semibold text-white">Clarify blockers</p>
+            </div>
+            <div class="border-brand-700/70 bg-brand-800/35 rounded-2xl border p-4">
+              <p class="text-brand-400 text-xs font-semibold tracking-widest uppercase">
+                Leaving soon
+              </p>
+              <p class="mt-2 text-sm font-semibold text-white">Agree boundaries</p>
+            </div>
+            <div class="border-brand-700/70 bg-brand-800/35 rounded-2xl border p-4">
+              <p class="text-brand-400 text-xs font-semibold tracking-widest uppercase">
+                Away window
+              </p>
+              <p class="mt-2 text-sm font-semibold text-white">
+                Work independently, checkpoint, resume after quota reset
+              </p>
+            </div>
+            <div class="border-accent-500/25 bg-accent-500/10 rounded-2xl border p-4">
+              <p class="text-accent-300 text-xs font-semibold tracking-widest uppercase">
+                Human returns
+              </p>
+              <p class="mt-2 text-sm font-semibold text-white">Report done, assumed, next</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="mt-14 grid gap-4 md:grid-cols-2">
