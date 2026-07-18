@@ -1,10 +1,10 @@
 {
-  "title": "When Claude Code Goes Rogue: Real Time Monitoring by Apollo Research",
-  "date": "2026-06-18T17:00:00Z",
-  "image": "/images/claude-code-goes-rogue-apollo-research.png",
-  "summary": "GenAI Gurus - Generative Artificial Intelligence Coding agents are quickly becoming part of day-to-day engineering work, but most people still lack visibility into what these agents are actually doing. Marius will share findings from Apollo’s research into tens of thousands of re",
-  "speaker_name": "Marius Hobbhahn",
-  "speaker_role": "CEO & Founder, Apollo Research",
-  "meetup_url": "https://www.meetup.com/genai-gurus/events/314881167/",
-  "display_date": "Thursday, June 18, 2026 at 7:00 PM CEST"
+  "title": "AgenTrust: From Governance Decisions to Verifiable Agent Actions",
+  "date": "2026-09-15T17:00:00Z",
+  "image": "/images/agentrust-verifiable-agent-actions.png",
+  "summary": "Most agent governance tools can decide whether an action should be allowed, but they struggle to prove what was actually requested, authorized and executed across agents, tools and infrastructure. AgenTrust fills this gap by connecting declared capabilities, policy enforcement…",
+  "speaker_name": "Imran Siddique",
+  "speaker_role": "Chief Platform Officer, OPAQUE",
+  "meetup_url": "https://www.meetup.com/genai-gurus/events/315720631/",
+  "display_date": "Tuesday, September 15, 2026 at 7:00 PM CEST"
 }

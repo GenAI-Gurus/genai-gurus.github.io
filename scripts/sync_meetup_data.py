@@ -88,11 +88,36 @@ def unescape_ical(value: str) -> str:
 
 
 def extract_speaker(summary: str, description: str) -> str:
-    for pattern in [r"Speaker[s]?:\s*([^\n|,;]+)", r"Presented by\s*([^\n|,;]+)"]:
+    for pattern in [
+        r"(?:\*{0,2})?(?:About the )?Speaker[s]?(?:\*{0,2})?\s*:?\s*([^\n|,;]+?)(?=\s+is\b)",
+        r"Speaker[s]?:\s*([^\n|,;]+)",
+        r"Presented by\s*([^\n|,;]+)",
+    ]:
         m = re.search(pattern, f"{summary}\n{description}", re.IGNORECASE)
         if m:
             return m.group(1).strip()
     return ""
+
+
+def summarize_event_description(description: str, limit: int = 280) -> str:
+    summary = re.sub(
+        r"^GenAI Gurus\s*-\s*Generative Artificial Intelligence\s*",
+        "",
+        description,
+        flags=re.IGNORECASE,
+    )
+    summary = re.split(
+        r"\*{0,2}(?:About the )?Speaker[s]?\*{0,2}",
+        summary,
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )[0].strip()
+
+    if len(summary) <= limit:
+        return summary
+
+    shortened = summary[: limit - 1].rsplit(" ", 1)[0].rstrip(" ,;:")
+    return f"{shortened}…"
 
 
 def parse_ical_events(ical_text: str) -> list[dict]:
@@ -128,7 +153,7 @@ def parse_ical_events(ical_text: str) -> list[dict]:
             "is_upcoming": event_dt >= now,
             "speaker_name": extract_speaker(summary, description),
             "meetup_url": item.get("URL", "").strip() or DEFAULT_EVENTS_URL,
-            "summary": description[:280],
+            "summary": summarize_event_description(description),
         })
     parsed.sort(key=lambda e: e["date"])
     return parsed

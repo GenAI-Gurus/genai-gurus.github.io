@@ -1,5 +1,18 @@
 [
   {
+    "title": "When Claude Code Goes Rogue: Real Time Monitoring by Apollo Research",
+    "date": "2026-06-18",
+    "image": "/images/claude-code-goes-rogue-apollo-research.png",
+    "summary": "See how Apollo Research monitors real-world coding agents for security risks, instruction drift, and scope creep.",
+    "speaker_name": "Marius Hobbhahn",
+    "speaker_role": "Apollo Research, CEO & Founder",
+    "speaker_photo": "",
+    "company_logo": "",
+    "meetup_participants": 259,
+    "youtube_views": 79,
+    "youtube_url": "https://www.youtube.com/watch?v=K7dW6kDbKBQ"
+  },
+  {
     "title": "Building Governed AI Agents: Microsoft Agent Governance Toolkit",
     "date": "2026-05-07",
     "image": "https://i.ytimg.com/vi/uDQBqp9Om5s/maxresdefault.jpg",
@@ -63,18 +76,5 @@
     "meetup_participants": 93,
     "youtube_views": 141,
     "youtube_url": "https://www.youtube.com/watch?v=M4ZzVePDWvI"
-  },
-  {
-    "title": "Stable Diffusion: Latent Generative Modeling for Efficient Visual Synthesis",
-    "date": "2023-10-10",
-    "image": "https://i.ytimg.com/vi/6d65X9-kR0g/maxresdefault.jpg",
-    "summary": "See why Stable Diffusion changed visual generative AI.",
-    "speaker_name": "Andreas Blattmann",
-    "speaker_role": "Stability AI, Research Scientist",
-    "speaker_photo": "/images/150x150.avif",
-    "company_logo": "",
-    "meetup_participants": 69,
-    "youtube_views": 134,
-    "youtube_url": "https://www.youtube.com/watch?v=6d65X9-kR0g"
   }
 ]
